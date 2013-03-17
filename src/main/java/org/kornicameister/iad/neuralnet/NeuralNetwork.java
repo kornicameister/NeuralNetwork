@@ -9,7 +9,13 @@ import java.util.ListIterator;
 
 /**
  * NeuralNetwork represents network built from
- * {@link Neuron}s organized into {@link org.kornicameister.iad.neuralnet.NeuralLayer}.
+ * {@link Neuron}s organized into {@link NeuralLayer}s.
+ * <p/>
+ * Implementation based on:
+ * <ul>
+ * <li><a href="http://edu.pjwstk.edu.pl/wyklady/nai/scb/wyklad3/w3.htm">Link_1</a></li>
+ * <li><a href="http://www.neurosoft.edu.pl/jbartman/NTI4.pdf">Link_2</a></li>
+ * </ul>
  *
  * @author kornicameister
  * @since 0.0.1
@@ -18,9 +24,32 @@ public class NeuralNetwork implements NeuralProcessable {
     private final static Logger LOGGER = Logger.getLogger(NeuralNetwork.class);
     private List<NeuralLayer> layerList = new LinkedList<>();
     private Double[] result;
+    private Double[] desiredResult;
 
     public NeuralNetwork(int size) {
         this.result = new Double[size];
+        this.desiredResult = new Double[size];
+    }
+
+    public NeuralNetwork(Double[] desiredResult) {
+        this.desiredResult = desiredResult;
+        this.result = new Double[this.desiredResult.length];
+    }
+
+    public Double[] getDesiredResult() {
+        return desiredResult;
+    }
+
+    public void setDesiredResult(Double[] desiredResult) {
+        this.desiredResult = desiredResult;
+    }
+
+    public Double[] getResult() {
+        return result;
+    }
+
+    public void setResult(Double[] result) {
+        this.result = result;
     }
 
     /**
@@ -56,16 +85,16 @@ public class NeuralNetwork implements NeuralProcessable {
         return layerList.add(neuralLayer);
     }
 
-    public NeuralLayer removeLayer(int i) {
-        return layerList.remove(i);
+    public NeuralLayer removeLayer(int layerIndex) {
+        return layerList.remove(layerIndex);
     }
 
-    public boolean removeLayer(Object o) {
-        return layerList.remove(o);
+    public boolean removeLayer(Object object) {
+        return layerList.remove(object);
     }
 
-    public NeuralLayer getLayer(int i) {
-        return layerList.get(i);
+    public NeuralLayer getLayer(int layerIndex) {
+        return layerList.get(layerIndex);
     }
 
     public List<NeuralLayer> getLayers() {
@@ -76,7 +105,5 @@ public class NeuralNetwork implements NeuralProcessable {
         this.layerList = layerList;
     }
 
-    public Double[] getResult() {
-        return result;
-    }
+
 }

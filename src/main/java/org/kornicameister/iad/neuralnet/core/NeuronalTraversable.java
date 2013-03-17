@@ -8,4 +8,11 @@ public interface NeuronalTraversable {
     Double getInput(int index);
 
     void setInput(int index, Double value);
+
+    /**
+     * Result of last lesson
+     *
+     * @return result of last lesson
+     */
+    Double getTeachingDiff();
 }

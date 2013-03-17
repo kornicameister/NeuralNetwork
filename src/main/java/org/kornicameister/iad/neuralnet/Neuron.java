@@ -1,13 +1,17 @@
 package org.kornicameister.iad.neuralnet;
 
 import org.kornicameister.iad.neuralnet.core.NeuralProcessable;
-import org.kornicameister.iad.neuralnet.function.Functional;
+import org.kornicameister.iad.neuralnet.core.NeuronalConnectible;
 import org.kornicameister.iad.neuralnet.core.NeuronalTraversable;
+import org.kornicameister.iad.neuralnet.function.Functional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * {@link Neuron} is basic brick used to built
- * {@link org.kornicameister.iad.neuralnet.NeuralNetwork}. Neurons are organized into
- * {@link org.kornicameister.iad.neuralnet.NeuralLayer}
+ * {@link NeuralNetwork}. Neurons are organized into
+ * {@link NeuralLayer}
  *
  * @author kornicameister
  * @since 0.0.1
@@ -15,22 +19,70 @@ import org.kornicameister.iad.neuralnet.core.NeuronalTraversable;
 public class Neuron implements
         NeuralProcessable,
         NeuronalTraversable {
+    private final static Double LEARNING_FACTOR = 0.4;
     private Double[] weights;
     private Double[] inputs;
     private Functional activationFunction;
+    private List<NeuronalConnectible> connections;
+    private Double teachingResult = 0.0;
 
-    public Neuron(int size, Functional activationFunction) {
-        this.activationFunction = activationFunction;
+    public Neuron(int size,
+                  Functional functional) {
+        this(size, functional, new ArrayList<NeuronalConnectible>());
+    }
+
+    public Neuron(int size,
+                  Functional functional,
+                  List<NeuronalConnectible> connections) {
+        this.activationFunction = functional;
         this.weights = new Double[size];
         this.inputs = new Double[size];
+        this.connections = connections;
     }
 
+    /**
+     * Teaching is process that is considered as reversed to
+     * processing. By that, teaching neuron in context of network
+     * is based on:
+     * <ul>
+     * <li>retrieving results from neurons in upper layer</li>
+     * <li>updating weights in neuron by particular calculated value</li>
+     * </ul>
+     */
     @Override
     public void teach() {
+        this.teachingResult = 0.0;
+        for (NeuronalConnectible connection : this.connections) {
+            teachingResult += connection.getTeachingDiff();
+        }
+        Double currentResult = this.computeOutput();
+        Double weightUpdater = teachingResult
+                * LEARNING_FACTOR
+                * this.activationFunction.derivativeCalculate(currentResult);
+        for (int i = 0; i < this.weights.length; i++) {
+            this.weights[i] += (weightUpdater * this.inputs[i]);
+        }
     }
 
+    /**
+     * Processing neuron is based on computing output value
+     * and pushing it further.
+     */
     @Override
     public void process() {
+        Double result = this.computeOutput();
+        for (NeuronalConnectible connectible : this.connections) {
+            connectible.pushResultForward(result);
+        }
+    }
+
+    private Double computeOutput() {
+        // weights must be calculated by multiplying them by input
+        Double result = 0.0;
+        for (int i = 0; i < this.weights.length; i++) {
+            result += this.inputs[i] * this.weights[i];
+        }
+        return this.activationFunction.calculate(result);
     }
 
     @Override
@@ -49,5 +101,10 @@ public class Neuron implements
     @Override
     public void setInput(int index, Double value) {
         this.inputs[index] = value;
+    }
+
+    @Override
+    public Double getTeachingDiff() {
+        return this.teachingResult;
     }
 }

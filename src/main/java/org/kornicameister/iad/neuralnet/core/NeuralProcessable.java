@@ -13,7 +13,7 @@ import java.util.Random;
  */
 public interface NeuralProcessable {
     /**
-     * Seed to be used in random initializ
+     * Seed to be used in random initialization
      */
     static Random seed = new Random();
 

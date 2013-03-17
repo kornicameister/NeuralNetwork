@@ -14,4 +14,13 @@ public interface NeuronalConnectible {
 
     Double getResultBackward();
 
+    /**
+     * This method is used to retrieve information up from neuronal network
+     * output and push it to elementary neuron. Having this method
+     * implemented allows each neuron to teach.
+     *
+     * @return teaching vector
+     */
+    Double getTeachingDiff();
+
 }
