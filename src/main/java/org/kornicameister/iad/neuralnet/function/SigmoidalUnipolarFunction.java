@@ -4,7 +4,7 @@ package org.kornicameister.iad.neuralnet.function;
  * @author kornicameister
  * @since 0.0.1
  */
-public class SigmoidalUnipolarFunction implements Functionable {
+public class SigmoidalUnipolarFunction implements Functional {
     protected static final double DEFAULT_BETA = 1.0;
     protected Double beta;
 

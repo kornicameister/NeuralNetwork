@@ -1,5 +1,7 @@
 package org.kornicameister.iad.neuralnet.function;
 
+import org.apache.log4j.Logger;
+
 /**
  * Implementation of linear function. Linear function has
  * following equation <pre>f(x) = ax + b</pre>
@@ -8,7 +10,8 @@ package org.kornicameister.iad.neuralnet.function;
  * @author kornicameister
  * @since 0.0.1
  */
-public class LinearFunction implements Functionable {
+public class LinearFunction implements Functional {
+    private final static Logger LOGGER = Logger.getLogger(LinearFunction.class);
     private Double aConstant;
     private Double bConstant;
 
@@ -19,6 +22,7 @@ public class LinearFunction implements Functionable {
     public LinearFunction(Double aConstant, Double bConstant) {
         this.aConstant = aConstant;
         this.bConstant = bConstant;
+        LOGGER.info(String.format("Initialized::%s", this));
     }
 
     public Double getaConstant() {
