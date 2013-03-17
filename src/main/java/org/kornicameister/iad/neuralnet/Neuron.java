@@ -5,7 +5,8 @@ import org.kornicameister.iad.neuralnet.core.NeuronalConnectible;
 import org.kornicameister.iad.neuralnet.core.NeuronalTraversable;
 import org.kornicameister.iad.neuralnet.function.Functional;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -26,18 +27,17 @@ public class Neuron implements
     private List<NeuronalConnectible> connections;
     private Double teachingResult = 0.0;
 
-    public Neuron(int size,
-                  Functional functional) {
-        this(size, functional, new ArrayList<NeuronalConnectible>());
+    public Neuron(Functional functional,
+                  Double[] weights,
+                  NeuronalConnectible... connections) {
+        this(functional, connections);
+        this.weights = weights;
     }
 
-    public Neuron(int size,
-                  Functional functional,
-                  List<NeuronalConnectible> connections) {
+    public Neuron(Functional functional,
+                  NeuronalConnectible... connections) {
         this.activationFunction = functional;
-        this.weights = new Double[size];
-        this.inputs = new Double[size];
-        this.connections = connections;
+        this.connections = new LinkedList<>(Arrays.asList(connections));
     }
 
     /**
@@ -101,6 +101,14 @@ public class Neuron implements
     @Override
     public void setInput(int index, Double value) {
         this.inputs[index] = value;
+    }
+
+    public Double[] getWeights() {
+        return weights;
+    }
+
+    public void setWeights(Double[] weights) {
+        this.weights = weights;
     }
 
     @Override
