@@ -1,7 +1,7 @@
-package org.kornicameister.iad.neuralnet.network;
+package org.kornicameister.iad.neuralnet;
 
 import org.apache.log4j.Logger;
-import org.kornicameister.iad.neuralnet.NeuralProcessable;
+import org.kornicameister.iad.neuralnet.core.NeuralProcessable;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.ListIterator;
 
 /**
  * NeuralNetwork represents network built from
- * {@link org.kornicameister.iad.neuralnet.neuron.Neuron}s organized into {@link NeuralLayer}.
+ * {@link Neuron}s organized into {@link org.kornicameister.iad.neuralnet.NeuralLayer}.
  *
  * @author kornicameister
  * @since 0.0.1

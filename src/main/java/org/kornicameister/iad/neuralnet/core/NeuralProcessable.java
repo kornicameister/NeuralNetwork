@@ -1,4 +1,4 @@
-package org.kornicameister.iad.neuralnet;
+package org.kornicameister.iad.neuralnet.core;
 
 import java.util.Random;
 

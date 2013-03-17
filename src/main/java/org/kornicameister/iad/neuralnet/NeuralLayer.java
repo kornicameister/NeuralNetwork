@@ -1,8 +1,7 @@
-package org.kornicameister.iad.neuralnet.network;
+package org.kornicameister.iad.neuralnet;
 
 import org.apache.log4j.Logger;
-import org.kornicameister.iad.neuralnet.NeuralProcessable;
-import org.kornicameister.iad.neuralnet.neuron.Neuron;
+import org.kornicameister.iad.neuralnet.core.NeuralProcessable;
 
 import java.util.LinkedList;
 import java.util.List;
