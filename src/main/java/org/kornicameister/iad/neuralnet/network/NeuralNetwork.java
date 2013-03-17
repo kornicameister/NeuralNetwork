@@ -9,9 +9,7 @@ import java.util.ListIterator;
 
 /**
  * NeuralNetwork represents network built from
- * {@link org.kornicameister.iad.neuralnet.neuron.Neuron}s organized into {@link NeuralLayer} with
- * every {@link org.kornicameister.iad.neuralnet.neuron.Neuron} connected with each other by
- * {@link org.kornicameister.iad.neuralnet.neuron.Arc}s
+ * {@link org.kornicameister.iad.neuralnet.neuron.Neuron}s organized into {@link NeuralLayer}.
  *
  * @author kornicameister
  * @since 0.0.1
@@ -76,5 +74,9 @@ public class NeuralNetwork implements NeuralProcessable {
 
     public void setLayers(List<NeuralLayer> layerList) {
         this.layerList = layerList;
+    }
+
+    public Double[] getResult() {
+        return result;
     }
 }

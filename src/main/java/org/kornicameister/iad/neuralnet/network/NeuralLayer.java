@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * {@link NeuralLayer} represents set of neurons
  * laying on the same layer in network, where
- * network itself is built from layers and arcs.
+ * network itself is built from layers.
  *
  * @author kornicameister
  * @since 0.0.1
