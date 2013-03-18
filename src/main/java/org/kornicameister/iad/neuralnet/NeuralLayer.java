@@ -3,8 +3,10 @@ package org.kornicameister.iad.neuralnet;
 import org.apache.log4j.Logger;
 import org.kornicameister.iad.neuralnet.core.NeuralProcessable;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * {@link NeuralLayer} represents set of neurons
@@ -18,10 +20,18 @@ public class NeuralLayer implements NeuralProcessable {
     private final static Logger LOGGER = Logger.getLogger(NeuralLayer.class);
     private List<Neuron> neurons = new LinkedList<>();
 
+    public NeuralLayer() {
+    }
+
+    public NeuralLayer(Neuron... neurons) {
+        this.neurons.addAll(Arrays.asList(neurons));
+    }
 
     @Override
     public void teach() {
-        for (Neuron neuron : this.neurons) {
+        ListIterator<Neuron> neuronListIterator = this.neurons.listIterator(this.neurons.size());
+        while (neuronListIterator.hasPrevious()) {
+            Neuron neuron = neuronListIterator.previous();
             LOGGER.info(String.format("Teaching neuron %s", neuron));
             neuron.teach();
         }
@@ -68,5 +78,13 @@ public class NeuralLayer implements NeuralProcessable {
 
     public void clearNeurons() {
         this.neurons.clear();
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("NeuralLayer{");
+        sb.append("neurons=").append(neurons);
+        sb.append('}');
+        return sb.toString();
     }
 }

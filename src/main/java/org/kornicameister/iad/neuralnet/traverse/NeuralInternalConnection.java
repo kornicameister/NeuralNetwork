@@ -13,6 +13,10 @@ import org.kornicameister.iad.neuralnet.core.NeuralTraversable;
  */
 public class NeuralInternalConnection implements NeuralConnection {
     private final NeuralTraversable neuron;
+    /**
+     * Slot means an input slot...which is the position
+     * on which we push result of the previous layer.
+     */
     private final int slot;
 
     public NeuralInternalConnection(NeuralTraversable neuron, int slot) {

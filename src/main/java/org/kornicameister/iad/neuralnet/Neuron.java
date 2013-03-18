@@ -21,23 +21,30 @@ public class Neuron implements
         NeuralProcessable,
         NeuralTraversable {
     private final static Double LEARNING_FACTOR = 0.4;
-    private Double[] weights;
-    private Double[] inputs;
+    private static Integer NEURON_ID = 0;
+    private Integer neuronId = NEURON_ID++;
+    private Double[] weights = new Double[0];
+    private Double[] inputs = new Double[0];
     private Function activationFunction;
-    private List<NeuralConnection> connections;
+    private List<NeuralConnection> connections = new LinkedList<>();
     private Double delta = 0.0;
+
+    public Neuron(Function function) {
+        this.activationFunction = function;
+    }
+
+    public Neuron(Function function,
+                  NeuralConnection... connections) {
+        this(function);
+        this.connections.addAll(Arrays.asList(connections));
+    }
 
     public Neuron(Function function,
                   Double[] weights,
                   NeuralConnection... connections) {
         this(function, connections);
         this.weights = weights;
-    }
-
-    public Neuron(Function function,
-                  NeuralConnection... connections) {
-        this.activationFunction = function;
-        this.connections = new LinkedList<>(Arrays.asList(connections));
+        this.inputs = new Double[this.weights.length];
     }
 
     /**
@@ -116,8 +123,11 @@ public class Neuron implements
         return weights;
     }
 
-    public void setWeights(Double[] weights) {
+    public void setWeights(Double... weights) {
         this.weights = weights;
+        if (this.inputs == null || this.inputs.length != this.weights.length) {
+            this.inputs = new Double[this.weights.length];
+        }
     }
 
     @Override
@@ -125,4 +135,20 @@ public class Neuron implements
         return this.delta;
     }
 
+    public boolean addConnection(NeuralConnection... neuralConnections) {
+        return connections.addAll(Arrays.asList(neuralConnections));
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Neuron{");
+        sb.append("neuronId=").append(neuronId);
+        sb.append(", weights=").append(Arrays.toString(weights == null ? new Double[]{} : weights));
+        sb.append(", inputs=").append(Arrays.toString(inputs == null ? new Double[]{} : inputs));
+        sb.append(", delta=").append(delta);
+        sb.append(", connections=").append(connections);
+        sb.append(", activationFunction=").append(activationFunction);
+        sb.append('}');
+        return sb.toString();
+    }
 }

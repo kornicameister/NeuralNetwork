@@ -14,8 +14,21 @@ package org.kornicameister.iad.neuralnet.core;
  * @since 0.0.1
  */
 public interface NeuralConnection {
+    /**
+     * This method is used to push value to next
+     * layer on given slot. Slot should be memorized
+     * with classes that implements this interface.
+     *
+     * @param result value to be passed
+     */
     void pushResultForward(Double result);
 
+    /**
+     * Retrieves value from upper layers and push
+     * it down to the previous
+     *
+     * @return retrieved value
+     */
     Double getResultBackward();
 
     /**

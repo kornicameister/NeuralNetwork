@@ -3,6 +3,7 @@ package org.kornicameister.iad.neuralnet;
 import org.apache.log4j.Logger;
 import org.kornicameister.iad.neuralnet.core.NeuralProcessable;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -91,6 +92,10 @@ public class NeuralNetwork implements NeuralProcessable {
         return layerList.add(neuralLayer);
     }
 
+    public void pushLayer(NeuralLayer neuralLayer) {
+        this.layerList.add(0, neuralLayer);
+    }
+
     public NeuralLayer removeLayer(int layerIndex) {
         return layerList.remove(layerIndex);
     }
@@ -112,4 +117,13 @@ public class NeuralNetwork implements NeuralProcessable {
     }
 
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("NeuralNetwork{");
+        sb.append("result=").append(Arrays.toString(result));
+        sb.append(", layerList=").append(layerList);
+        sb.append(", desiredResult=").append(Arrays.toString(desiredResult));
+        sb.append('}');
+        return sb.toString();
+    }
 }
