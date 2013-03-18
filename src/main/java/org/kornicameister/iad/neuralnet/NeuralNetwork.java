@@ -81,6 +81,12 @@ public class NeuralNetwork implements NeuralProcessable {
         }
     }
 
+    public void initWithSignal(Double[] signal) {
+        for (Neuron neuron : this.layerList.get(0).getNeurons()) {
+            neuron.setInput(signal.clone());
+        }
+    }
+
     public boolean addLayer(NeuralLayer neuralLayer) {
         return layerList.add(neuralLayer);
     }

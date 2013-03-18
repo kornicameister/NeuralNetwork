@@ -6,11 +6,11 @@ package org.kornicameister.iad.neuralnet.function;
  * two method:
  * <ol>
  * <li>
- * {@link Functional#calculate(Double...)} - calculates value
+ * {@link Function#calculate(Double...)} - calculates value
  * from range of input values
  * </li>
  * <li>
- * {@link Functional#derivativeCalculate(Double)} - implements derivative
+ * {@link Function#derivativeCalculate(Double)} - implements derivative
  * version on calculate method
  * </li>
  * </ol>
@@ -18,8 +18,8 @@ package org.kornicameister.iad.neuralnet.function;
  * @author kornicameister
  * @since 0.0.1
  */
-public interface Functional {
-    Double calculate(Double... args);
+public abstract class Function {
+    public abstract Double calculate(Double... args);
 
-    Double derivativeCalculate(Double arg);
+    public abstract Double derivativeCalculate(Double arg);
 }

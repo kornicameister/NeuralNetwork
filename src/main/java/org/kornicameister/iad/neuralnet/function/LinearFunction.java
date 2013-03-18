@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
  * @author kornicameister
  * @since 0.0.1
  */
-public class LinearFunction implements Functional {
+public class LinearFunction extends Function {
     private final static Logger LOGGER = Logger.getLogger(LinearFunction.class);
     private Double aConstant;
     private Double bConstant;

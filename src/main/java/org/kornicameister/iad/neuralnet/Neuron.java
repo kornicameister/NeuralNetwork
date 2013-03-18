@@ -1,9 +1,9 @@
 package org.kornicameister.iad.neuralnet;
 
+import org.kornicameister.iad.neuralnet.core.NeuralConnection;
 import org.kornicameister.iad.neuralnet.core.NeuralProcessable;
-import org.kornicameister.iad.neuralnet.core.NeuronalConnectible;
-import org.kornicameister.iad.neuralnet.core.NeuronalTraversable;
-import org.kornicameister.iad.neuralnet.function.Functional;
+import org.kornicameister.iad.neuralnet.core.NeuralTraversable;
+import org.kornicameister.iad.neuralnet.function.Function;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -19,24 +19,24 @@ import java.util.List;
  */
 public class Neuron implements
         NeuralProcessable,
-        NeuronalTraversable {
+        NeuralTraversable {
     private final static Double LEARNING_FACTOR = 0.4;
     private Double[] weights;
     private Double[] inputs;
-    private Functional activationFunction;
-    private List<NeuronalConnectible> connections;
-    private Double teachingResult = 0.0;
+    private Function activationFunction;
+    private List<NeuralConnection> connections;
+    private Double delta = 0.0;
 
-    public Neuron(Functional functional,
+    public Neuron(Function function,
                   Double[] weights,
-                  NeuronalConnectible... connections) {
-        this(functional, connections);
+                  NeuralConnection... connections) {
+        this(function, connections);
         this.weights = weights;
     }
 
-    public Neuron(Functional functional,
-                  NeuronalConnectible... connections) {
-        this.activationFunction = functional;
+    public Neuron(Function function,
+                  NeuralConnection... connections) {
+        this.activationFunction = function;
         this.connections = new LinkedList<>(Arrays.asList(connections));
     }
 
@@ -51,12 +51,12 @@ public class Neuron implements
      */
     @Override
     public void teach() {
-        this.teachingResult = 0.0;
-        for (NeuronalConnectible connection : this.connections) {
-            teachingResult += connection.getTeachingDiff();
+        this.delta = 0.0;
+        for (NeuralConnection connection : this.connections) {
+            delta += connection.getDelta();
         }
         Double currentResult = this.computeOutput();
-        Double weightUpdater = teachingResult
+        Double weightUpdater = delta
                 * LEARNING_FACTOR
                 * this.activationFunction.derivativeCalculate(currentResult);
         for (int i = 0; i < this.weights.length; i++) {
@@ -71,13 +71,17 @@ public class Neuron implements
     @Override
     public void process() {
         Double result = this.computeOutput();
-        for (NeuronalConnectible connectible : this.connections) {
+        for (NeuralConnection connectible : this.connections) {
             connectible.pushResultForward(result);
         }
     }
 
+    /**
+     * Computes output of this neuron by multiplying input signal by weight
+     *
+     * @return computed output
+     */
     private Double computeOutput() {
-        // weights must be calculated by multiplying them by input
         Double result = 0.0;
         for (int i = 0; i < this.weights.length; i++) {
             result += this.inputs[i] * this.weights[i];
@@ -103,6 +107,11 @@ public class Neuron implements
         this.inputs[index] = value;
     }
 
+    @Override
+    public void setInput(Double[] clone) {
+        this.inputs = clone;
+    }
+
     public Double[] getWeights() {
         return weights;
     }
@@ -112,7 +121,8 @@ public class Neuron implements
     }
 
     @Override
-    public Double getTeachingDiff() {
-        return this.teachingResult;
+    public Double getDelta() {
+        return this.delta;
     }
+
 }

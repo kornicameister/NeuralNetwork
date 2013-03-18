@@ -17,8 +17,15 @@ public interface NeuralProcessable {
      */
     static Random seed = new Random();
 
+    /**
+     * This method implementation is designed to support teaching process. For
+     * example method of backwards propagation can be used.
+     */
     void teach();
 
+    /**
+     * Use this method to process input of neural network.
+     */
     void process();
 
     /**

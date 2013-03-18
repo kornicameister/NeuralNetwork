@@ -1,7 +1,7 @@
 package org.kornicameister.iad.neuralnet.traverse;
 
-import org.kornicameister.iad.neuralnet.core.NeuronalConnectible;
-import org.kornicameister.iad.neuralnet.core.NeuronalTraversable;
+import org.kornicameister.iad.neuralnet.core.NeuralConnection;
+import org.kornicameister.iad.neuralnet.core.NeuralTraversable;
 
 /**
  * Defines connection between particular neuron upon
@@ -11,11 +11,11 @@ import org.kornicameister.iad.neuralnet.core.NeuronalTraversable;
  * @author kornicameister
  * @since 0.0.1
  */
-public class NeuronalInternalConnection implements NeuronalConnectible {
-    private final NeuronalTraversable neuron;
+public class NeuralInternalConnection implements NeuralConnection {
+    private final NeuralTraversable neuron;
     private final int slot;
 
-    public NeuronalInternalConnection(NeuronalTraversable neuron, int slot) {
+    public NeuralInternalConnection(NeuralTraversable neuron, int slot) {
         this.neuron = neuron;
         this.slot = slot;
     }
@@ -31,7 +31,7 @@ public class NeuronalInternalConnection implements NeuronalConnectible {
     }
 
     @Override
-    public Double getTeachingDiff() {
-        return this.neuron.getTeachingDiff();
+    public Double getDelta() {
+        return this.neuron.getDelta();
     }
 }
