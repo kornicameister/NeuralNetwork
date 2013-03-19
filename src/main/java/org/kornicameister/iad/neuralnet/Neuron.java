@@ -17,6 +17,7 @@ import java.util.List;
  * @author kornicameister
  * @since 0.0.1
  */
+//TODO extra weight and input = 1 is not included
 public class Neuron implements
         NeuralProcessable,
         NeuralTraversable {
@@ -150,5 +151,14 @@ public class Neuron implements
         sb.append(", activationFunction=").append(activationFunction);
         sb.append('}');
         return sb.toString();
+    }
+
+    public void setSize(int size) {
+        this.weights = new Double[size];
+        this.inputs = new Double[size];
+    }
+
+    public int getSize() {
+        return this.weights.length;
     }
 }

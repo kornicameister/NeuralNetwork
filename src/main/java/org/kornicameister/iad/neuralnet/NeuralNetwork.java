@@ -126,4 +126,9 @@ public class NeuralNetwork implements NeuralProcessable {
         sb.append('}');
         return sb.toString();
     }
+
+    public void setSize(int size) {
+        this.result = new Double[size];
+        this.desiredResult = new Double[size];
+    }
 }
