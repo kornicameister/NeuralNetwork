@@ -80,6 +80,10 @@ public class NeuralLayer implements NeuralProcessable {
         this.neurons.clear();
     }
 
+    public int getSize() {
+        return this.neurons.size();
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("NeuralLayer{");
