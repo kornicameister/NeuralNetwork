@@ -53,11 +53,7 @@ public class NeuralLayer implements NeuralProcessable {
     }
 
     public boolean addNeuron(Neuron neuron) {
-        boolean added = this.neurons.add(neuron);
-        if (added) {
-            LOGGER.info(String.format("Added neuron %s", neuron));
-        }
-        return added;
+        return this.neurons.add(neuron);
     }
 
     public Neuron getNeuron(int i) {
@@ -87,7 +83,7 @@ public class NeuralLayer implements NeuralProcessable {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("NeuralLayer{");
-        sb.append("neurons=").append(neurons);
+        sb.append("neurons=").append(neurons.size());
         sb.append('}');
         return sb.toString();
     }

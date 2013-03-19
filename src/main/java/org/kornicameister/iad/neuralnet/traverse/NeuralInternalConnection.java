@@ -1,5 +1,6 @@
 package org.kornicameister.iad.neuralnet.traverse;
 
+import org.kornicameister.iad.neuralnet.Neuron;
 import org.kornicameister.iad.neuralnet.core.NeuralConnection;
 import org.kornicameister.iad.neuralnet.core.NeuralTraversable;
 
@@ -37,5 +38,15 @@ public class NeuralInternalConnection implements NeuralConnection {
     @Override
     public Double getDelta() {
         return this.neuron.getDelta();
+    }
+
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("{neuron=").append(((Neuron) neuron).getId());
+        sb.append(", slot=").append(slot);
+        sb.append('}');
+        return sb.toString();
     }
 }

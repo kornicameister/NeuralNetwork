@@ -44,6 +44,7 @@ public class Neuron implements
                   Double[] weights,
                   NeuralConnection... connections) {
         this(function, connections);
+        this.setSize(this.weights.length + 1);
         this.weights = weights;
         this.inputs = new Double[this.weights.length];
     }
@@ -85,13 +86,22 @@ public class Neuron implements
     }
 
     /**
-     * Computes output of this neuron by multiplying input signal by weight
+     * Computes output of this neuron by multiplying input signal by weight.
+     * Neuron's output is calculated by following this equation, which
+     * does includes weight which is an extra one added at the first
+     * position in the neuron.
+     * <pre>
+     *     <code>
+     *         y = f(w_0 + sum_{i={1,n}}(w_i * x_i))
+     *     </code>
+     *     x stands for neuron's input at given i's position.
+     * </pre>
      *
      * @return computed output
      */
     private Double computeOutput() {
-        Double result = 0.0;
-        for (int i = 0; i < this.weights.length; i++) {
+        Double result = this.weights[0];
+        for (int i = 1; i < this.weights.length; i++) {
             result += this.inputs[i] * this.weights[i];
         }
         return this.activationFunction.calculate(result);
@@ -103,21 +113,41 @@ public class Neuron implements
         for (int w = 0; w < this.weights.length; w++) {
             this.weights[w] = seed.nextDouble() * (higher - lower) + lower;
         }
+        this.inputs[0] = 1.0;
     }
 
+    /**
+     * Returns an index for given index
+     *
+     * @param index index of an input
+     * @return input value at given index
+     */
     @Override
     public Double getInput(int index) {
         return this.inputs[index];
     }
 
+    /**
+     * Sets an input on given index
+     *
+     * @param index absolute index
+     * @param value value of input at the given index
+     */
     @Override
     public void setInput(int index, Double value) {
         this.inputs[index] = value;
     }
 
+    /**
+     * Sets and input, by passing the <strong>input vector</strong>.
+     * This method excludes first index of an input, which is always
+     * equal to one.
+     *
+     * @param inputVector an input to be set
+     */
     @Override
-    public void setInput(Double[] clone) {
-        this.inputs = clone;
+    public void setInput(Double[] inputVector) {
+        this.inputs = inputVector;
     }
 
     public Double[] getWeights() {
@@ -140,19 +170,6 @@ public class Neuron implements
         return connections.addAll(Arrays.asList(neuralConnections));
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Neuron{");
-        sb.append("neuronId=").append(neuronId);
-        sb.append(", weights=").append(Arrays.toString(weights == null ? new Double[]{} : weights));
-        sb.append(", inputs=").append(Arrays.toString(inputs == null ? new Double[]{} : inputs));
-        sb.append(", delta=").append(delta);
-        sb.append(", connections=").append(connections);
-        sb.append(", activationFunction=").append(activationFunction);
-        sb.append('}');
-        return sb.toString();
-    }
-
     public void setSize(int size) {
         this.weights = new Double[size];
         this.inputs = new Double[size];
@@ -160,5 +177,21 @@ public class Neuron implements
 
     public int getSize() {
         return this.weights.length;
+    }
+
+    public Integer getId() {
+        return this.neuronId;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Neuron{\n");
+        sb.append("neuronId=").append(neuronId).append("\n");
+        sb.append("weights=").append(Arrays.toString(weights == null ? new Double[]{} : weights)).append("\n");
+        sb.append("inputs=").append(Arrays.toString(inputs == null ? new Double[]{} : inputs)).append("\n");
+        sb.append("delta=").append(delta).append("\n");
+        sb.append("connections=").append(connections).append("\n");
+        sb.append('}');
+        return sb.toString();
     }
 }

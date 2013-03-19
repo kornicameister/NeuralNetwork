@@ -30,4 +30,14 @@ public class NeuralOutputConnection implements NeuralConnection {
     public Double getDelta() {
         return this.network.getDesiredResult()[this.slot] - this.network.getResult()[this.slot];
     }
+
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("NOC{");
+        sb.append("slot=").append(slot);
+        sb.append(", network=").append(network.getSize());
+        sb.append('}');
+        return sb.toString();
+    }
 }

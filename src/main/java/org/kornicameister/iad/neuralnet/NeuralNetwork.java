@@ -73,6 +73,7 @@ public class NeuralNetwork implements NeuralProcessable {
             LOGGER.info(String.format("Processing layer %s", layer));
             layer.process();
         }
+        LOGGER.info(String.format("Processed and computed with result=%s", Arrays.deepToString(this.result)));
     }
 
     @Override
@@ -130,5 +131,9 @@ public class NeuralNetwork implements NeuralProcessable {
     public void setSize(int size) {
         this.result = new Double[size];
         this.desiredResult = new Double[size];
+    }
+
+    public Integer getSize() {
+        return this.result.length;
     }
 }
