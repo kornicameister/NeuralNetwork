@@ -2,7 +2,6 @@ package org.kornicameister.iad.neuralnet.traverse;
 
 import org.kornicameister.iad.neuralnet.Neuron;
 import org.kornicameister.iad.neuralnet.core.AbstractConnection;
-import org.kornicameister.iad.neuralnet.core.NeuralTraversable;
 
 /**
  * Defines connection between particular neuron upon
@@ -13,9 +12,9 @@ import org.kornicameister.iad.neuralnet.core.NeuralTraversable;
  * @since 0.0.1
  */
 public class NeuralInternalConnection extends AbstractConnection {
-    private final NeuralTraversable neuron;
+    private final Neuron neuron;
 
-    public NeuralInternalConnection(NeuralTraversable neuron, int slot) {
+    public NeuralInternalConnection(Neuron neuron, int slot) {
         super(slot);
         this.neuron = neuron;
     }
@@ -38,7 +37,7 @@ public class NeuralInternalConnection extends AbstractConnection {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
-        sb.append("{neuron=").append(((Neuron) neuron).getNeuronId());
+        sb.append("{neuron=").append(neuron.getNeuronId());
         sb.append(", slot=").append(this.getSlot());
         sb.append('}');
         return sb.toString();

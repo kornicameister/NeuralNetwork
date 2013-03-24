@@ -43,6 +43,9 @@ public abstract class _Neuron {
      */
     protected Double biasWeight = 0.0;
 
+    protected Double[] weights = new Double[0];
+    protected Double[] inputs = new Double[0];
+
     protected _Neuron(Boolean biasEnabled, Function activationFunction) {
         this.biasEnabled = biasEnabled;
         this.activationFunction = activationFunction;
@@ -78,6 +81,58 @@ public abstract class _Neuron {
 
     public void setActivationFunction(Function activationFunction) {
         this.activationFunction = activationFunction;
+    }
+
+    public void setSize(final int size) {
+        this.weights = new Double[size];
+        this.inputs = new Double[size];
+    }
+
+    public int getSize() {
+        return this.weights.length;
+    }
+
+
+    /**
+     * Returns an index for given index
+     *
+     * @param index index of an input
+     * @return input value at given index
+     */
+    public Double getInput(int index) {
+        return this.inputs[index];
+    }
+
+    /**
+     * Sets an input on given index
+     *
+     * @param index absolute index
+     * @param value value of input at the given index
+     */
+    public void setInput(int index, Double value) {
+        this.inputs[index] = value;
+    }
+
+    /**
+     * Sets and input, by passing the <strong>input vector</strong>.
+     * This method excludes first index of an input, which is always
+     * equal to one.
+     *
+     * @param inputVector an input to be set
+     */
+    public void setInput(Double[] inputVector) {
+        this.inputs = inputVector.clone();
+    }
+
+    public Double[] getWeights() {
+        return weights;
+    }
+
+    public void setWeights(Double... weights) {
+        this.weights = weights.clone();
+        if (this.inputs == null || this.inputs.length != this.weights.length) {
+            this.inputs = new Double[this.weights.length];
+        }
     }
 
     @Override
