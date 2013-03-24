@@ -1,5 +1,6 @@
 package org.kornicameister.iad.neuralnet;
 
+import org.apache.log4j.Logger;
 import org.kornicameister.iad.neuralnet.core.NeuralConnection;
 import org.kornicameister.iad.neuralnet.core.NeuralProcessable;
 import org.kornicameister.iad.neuralnet.core.NeuralTraversable;
@@ -16,11 +17,11 @@ import java.util.Arrays;
  * @author kornicameister
  * @since 0.0.1
  */
-//TODO extra weight and input = 1 is not included
 public class Neuron extends _Neuron implements
         NeuralProcessable,
         NeuralTraversable {
     private Double delta = 0.0;
+    private final static Logger LOGGER = Logger.getLogger(Neuron.class);
 
     public Neuron(Boolean biasEnabled,
                   Function function) {
@@ -54,16 +55,25 @@ public class Neuron extends _Neuron implements
      */
     @Override
     public void feedBackward() {
+        Double guess = this.computeOutput();
+        this.recomputeDelta();
+        Double weightUpdater = 2.0
+                * delta
+                * LEARNING_FACTOR
+                * this.activationFunction.derivativeCalculate(guess);
+
+        LOGGER.info(String.format("Neuron[%d] -> guess=%f,delta=%f,weight_update=%f",
+                this.neuronId, guess, this.delta, weightUpdater));
+
+        for (int i = 0; i < this.weights.length; i++) {
+            this.weights[i] += (weightUpdater * this.inputs[i]);
+        }
+    }
+
+    private void recomputeDelta() {
         this.delta = 0.0;
         for (NeuralConnection connection : this.connections) {
             delta += connection.getDelta();
-        }
-        Double currentResult = this.computeOutput();
-        Double weightUpdater = delta
-                * LEARNING_FACTOR
-                * this.activationFunction.derivativeCalculate(currentResult);
-        for (int i = 0; i < this.weights.length; i++) {
-            this.weights[i] += (weightUpdater * this.inputs[i]);
         }
     }
 

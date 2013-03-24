@@ -8,6 +8,7 @@ import org.kornicameister.iad.neuralnet.traverse.NeuralOutputConnection;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -189,6 +190,7 @@ public class NeuralNetworkTest {
         out = new PrintWriter(new File("out.txt"));
         for (Double[] aRandomSignal : randomSignal) {
             network.initWithSignal(aRandomSignal);
+            network.setDesiredResult(aRandomSignal);
             network.feedForward();
             for (int j = 0; j < network.getResult().length; j++) {
                 out.print(String.format("%f ", network.getResult()[j]));
@@ -196,5 +198,77 @@ public class NeuralNetworkTest {
             out.println();
         }
         out.close();
+
+        int training = 0;
+        while ((training++) < 100) {
+            network.feedForward();
+            if (Arrays.equals(network.getResult(), network.getDesiredResult())) {
+                System.out.println(String.format("Taught in %d iterations", training - 1));
+                break;
+            }
+            network.feedBackward();
+        }
+    }
+
+    /**
+     * Back propagation testing
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testFive() throws Exception {
+        NeuralNetwork network = new NeuralNetwork(1);
+        final LinearFunction function = new LinearFunction(1.0, 0.5);
+        final boolean biasEnabled = false;
+
+        Neuron neuron1 = new Neuron(biasEnabled, function);
+        neuron1.setSize(2);
+        Neuron neuron11 = new Neuron(biasEnabled, function);
+        neuron11.setSize(2);
+        Neuron neuron12 = new Neuron(biasEnabled, function);
+        neuron12.setSize(2);
+
+        Neuron neuron2 = new Neuron(biasEnabled, function);
+        neuron2.setSize(3);
+        Neuron neuron21 = new Neuron(biasEnabled, function);
+        neuron21.setSize(3);
+
+        Neuron neuron3 = new Neuron(biasEnabled, function);
+        neuron3.setSize(1);
+
+        Neuron neuron4 = new Neuron(biasEnabled, function);
+        neuron4.setSize(1);
+
+        neuron4.addConnection(new NeuralOutputConnection(network, 0));
+        neuron3.addConnection(new NeuralInternalConnection(neuron4, 0));
+
+        neuron2.addConnection(new NeuralInternalConnection(neuron3, 0));
+        neuron21.addConnection(new NeuralInternalConnection(neuron3, 0));
+
+        neuron1.addConnection(new NeuralInternalConnection(neuron2, 0));
+        neuron11.addConnection(new NeuralInternalConnection(neuron2, 1));
+        neuron12.addConnection(new NeuralInternalConnection(neuron2, 2));
+        neuron1.addConnection(new NeuralInternalConnection(neuron21, 0));
+        neuron11.addConnection(new NeuralInternalConnection(neuron21, 1));
+        neuron12.addConnection(new NeuralInternalConnection(neuron21, 2));
+
+        network.pushLayer(new NeuralLayer(neuron4));
+        network.pushLayer(new NeuralLayer(neuron3));
+        network.pushLayer(new NeuralLayer(neuron2, neuron21));
+        network.pushLayer(new NeuralLayer(neuron1, neuron11, neuron12));
+
+        network.initByRandom(-0.5, 0.5);
+        network.initWithSignal(new Double[]{-1.5, 1.5});
+        network.setDesiredResult(new Double[]{1.2});
+
+        int training = 0;
+        while ((training++) < 100) {
+            network.feedForward();
+            if (Arrays.equals(network.getResult(), network.getDesiredResult())) {
+                System.out.println(String.format("Taught in %d iterations", training - 1));
+                break;
+            }
+            network.feedBackward();
+        }
     }
 }

@@ -18,7 +18,7 @@ public abstract class _Neuron {
      * By this variable neuron is kept from learning
      * two fast by backward propagation method (gradient)
      */
-    protected final static Double LEARNING_FACTOR = 0.4;
+    protected final static Double LEARNING_FACTOR = 0.05;
     /**
      * If bias input is enabled for neuron, therefore
      * this value is used and extra weight is computed

@@ -1,6 +1,5 @@
 package org.kornicameister.iad.neuralnet;
 
-import org.apache.log4j.Logger;
 import org.kornicameister.iad.neuralnet.core.NeuralProcessable;
 import org.kornicameister.iad.neuralnet.impl._NeuralLayer;
 
@@ -16,8 +15,6 @@ import java.util.ListIterator;
  * @since 0.0.1
  */
 public class NeuralLayer extends _NeuralLayer implements NeuralProcessable {
-    private final static Logger LOGGER = Logger.getLogger(NeuralLayer.class);
-
     public NeuralLayer() {
     }
 
@@ -30,7 +27,6 @@ public class NeuralLayer extends _NeuralLayer implements NeuralProcessable {
         ListIterator<Neuron> neuronListIterator = this.neurons.listIterator(this.neurons.size());
         while (neuronListIterator.hasPrevious()) {
             Neuron neuron = neuronListIterator.previous();
-            LOGGER.info(String.format("Teaching neuron %s", neuron));
             neuron.feedBackward();
         }
     }
@@ -38,7 +34,6 @@ public class NeuralLayer extends _NeuralLayer implements NeuralProcessable {
     @Override
     public void feedForward() {
         for (Neuron neuron : this.neurons) {
-            LOGGER.info(String.format("Processing neuron %s", neuron));
             neuron.feedForward();
         }
     }

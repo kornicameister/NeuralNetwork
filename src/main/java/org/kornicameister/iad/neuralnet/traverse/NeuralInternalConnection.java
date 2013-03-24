@@ -31,7 +31,7 @@ public class NeuralInternalConnection extends AbstractConnection {
 
     @Override
     public Double getDelta() {
-        return this.neuron.getDelta();
+        return this.neuron.getDelta() * this.neuron.getWeights()[this.getSlot()];
     }
 
     @Override
