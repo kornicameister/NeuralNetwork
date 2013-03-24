@@ -2,10 +2,9 @@ package org.kornicameister.iad.neuralnet;
 
 import org.apache.log4j.Logger;
 import org.kornicameister.iad.neuralnet.core.NeuralProcessable;
+import org.kornicameister.iad.neuralnet.impl._NeuralNetwork;
 
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.ListIterator;
 
 /**
@@ -21,20 +20,26 @@ import java.util.ListIterator;
  * @author kornicameister
  * @since 0.0.1
  */
-public class NeuralNetwork implements NeuralProcessable {
+public class NeuralNetwork extends _NeuralNetwork implements NeuralProcessable {
     private final static Logger LOGGER = Logger.getLogger(NeuralNetwork.class);
-    private List<NeuralLayer> layerList = new LinkedList<>();
     private Double[] result;
     private Double[] desiredResult;
 
     public NeuralNetwork(int size) {
         this.result = new Double[size];
         this.desiredResult = new Double[size];
+        for (int i = 0; i < size; i++) {
+            this.result[i] = 0.0;
+            this.desiredResult[i] = 0.0;
+        }
     }
 
     public NeuralNetwork(Double[] desiredResult) {
         this.desiredResult = desiredResult;
         this.result = new Double[this.desiredResult.length];
+        for (int i = 0; i < desiredResult.length; i++) {
+            this.result[i] = 0.0;
+        }
     }
 
     public Double[] getDesiredResult() {
@@ -88,35 +93,6 @@ public class NeuralNetwork implements NeuralProcessable {
             neuron.setInput(signal.clone());
         }
     }
-
-    public boolean addLayer(NeuralLayer neuralLayer) {
-        return layerList.add(neuralLayer);
-    }
-
-    public void pushLayer(NeuralLayer neuralLayer) {
-        this.layerList.add(0, neuralLayer);
-    }
-
-    public NeuralLayer removeLayer(int layerIndex) {
-        return layerList.remove(layerIndex);
-    }
-
-    public boolean removeLayer(Object object) {
-        return layerList.remove(object);
-    }
-
-    public NeuralLayer getLayer(int layerIndex) {
-        return layerList.get(layerIndex);
-    }
-
-    public List<NeuralLayer> getLayers() {
-        return layerList;
-    }
-
-    public void setLayers(List<NeuralLayer> layerList) {
-        this.layerList = layerList;
-    }
-
 
     @Override
     public String toString() {
