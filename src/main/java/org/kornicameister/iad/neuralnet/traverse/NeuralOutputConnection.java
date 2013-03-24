@@ -1,42 +1,44 @@
 package org.kornicameister.iad.neuralnet.traverse;
 
 import org.kornicameister.iad.neuralnet.NeuralNetwork;
-import org.kornicameister.iad.neuralnet.core.NeuralConnection;
+import org.kornicameister.iad.neuralnet.core.AbstractConnection;
 
 /**
+ * Class represents connection
+ * between neural network and
+ * neurons.
+ *
  * @author kornicameister
  * @since 0.0.1
  */
-public class NeuralOutputConnection implements NeuralConnection {
+public class NeuralOutputConnection extends AbstractConnection {
     private final NeuralNetwork network;
-    private final int slot;
 
     public NeuralOutputConnection(NeuralNetwork network, int slot) {
+        super(slot);
         this.network = network;
-        this.slot = slot;
     }
 
     @Override
     public void pushResultForward(Double result) {
-        this.network.getResult()[this.slot] = result;
+        this.network.getResult()[this.getSlot()] = result;
     }
 
     @Override
     public Double getResultBackward() {
-        return this.network.getResult()[this.slot];
+        return this.network.getResult()[this.getSlot()];
     }
 
     @Override
     public Double getDelta() {
-        return this.network.getDesiredResult()[this.slot] - this.network.getResult()[this.slot];
+        return this.network.getDesiredResult()[this.getSlot()] - this.network.getResult()[this.getSlot()];
     }
-
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("NOC{");
-        sb.append("slot=").append(slot);
-        sb.append(", network=").append(network.getSize());
+        final StringBuilder sb = new StringBuilder();
+        sb.append("{network=").append(network.getSize());
+        sb.append(", slot=").append(this.getSlot());
         sb.append('}');
         return sb.toString();
     }

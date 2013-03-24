@@ -1,7 +1,7 @@
 package org.kornicameister.iad.neuralnet.traverse;
 
 import org.kornicameister.iad.neuralnet.Neuron;
-import org.kornicameister.iad.neuralnet.core.NeuralConnection;
+import org.kornicameister.iad.neuralnet.core.AbstractConnection;
 import org.kornicameister.iad.neuralnet.core.NeuralTraversable;
 
 /**
@@ -12,27 +12,22 @@ import org.kornicameister.iad.neuralnet.core.NeuralTraversable;
  * @author kornicameister
  * @since 0.0.1
  */
-public class NeuralInternalConnection implements NeuralConnection {
+public class NeuralInternalConnection extends AbstractConnection {
     private final NeuralTraversable neuron;
-    /**
-     * Slot means an input slot...which is the position
-     * on which we push result of the previous layer.
-     */
-    private final int slot;
 
     public NeuralInternalConnection(NeuralTraversable neuron, int slot) {
+        super(slot);
         this.neuron = neuron;
-        this.slot = slot;
     }
 
     @Override
     public void pushResultForward(Double result) {
-        this.neuron.setInput(this.slot, result);
+        this.neuron.setInput(this.getSlot(), result);
     }
 
     @Override
     public Double getResultBackward() {
-        return this.neuron.getInput(this.slot);
+        return this.neuron.getInput(this.getSlot());
     }
 
     @Override
@@ -40,12 +35,11 @@ public class NeuralInternalConnection implements NeuralConnection {
         return this.neuron.getDelta();
     }
 
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("{neuron=").append(((Neuron) neuron).getId());
-        sb.append(", slot=").append(slot);
+        sb.append(", slot=").append(this.getSlot());
         sb.append('}');
         return sb.toString();
     }
