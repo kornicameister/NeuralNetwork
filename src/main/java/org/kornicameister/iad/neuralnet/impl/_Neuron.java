@@ -18,7 +18,7 @@ public abstract class _Neuron {
      * By this variable neuron is kept from learning
      * two fast by backward propagation method (gradient)
      */
-    protected final static Double LEARNING_FACTOR = 0.05;
+    protected final static Double LEARNING_FACTOR = 0.1;
     /**
      * If bias input is enabled for neuron, therefore
      * this value is used and extra weight is computed
@@ -121,7 +121,7 @@ public abstract class _Neuron {
      * @param inputVector an input to be set
      */
     public void setInput(Double[] inputVector) {
-        this.inputs = inputVector.clone();
+        this.inputs = inputVector;
     }
 
     public Double[] getWeights() {
@@ -129,7 +129,7 @@ public abstract class _Neuron {
     }
 
     public void setWeights(Double... weights) {
-        this.weights = weights.clone();
+        this.weights = weights;
         if (this.inputs == null || this.inputs.length != this.weights.length) {
             this.inputs = new Double[this.weights.length];
         }

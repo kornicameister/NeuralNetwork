@@ -198,16 +198,6 @@ public class NeuralNetworkTest {
             out.println();
         }
         out.close();
-
-        int training = 0;
-        while ((training++) < 100) {
-            network.feedForward();
-            if (Arrays.equals(network.getResult(), network.getDesiredResult())) {
-                System.out.println(String.format("Taught in %d iterations", training - 1));
-                break;
-            }
-            network.feedBackward();
-        }
     }
 
     /**
@@ -262,13 +252,89 @@ public class NeuralNetworkTest {
         network.setDesiredResult(new Double[]{1.2});
 
         int training = 0;
-        while ((training++) < 100) {
+        while ((training++) < 300) {
             network.feedForward();
             if (Arrays.equals(network.getResult(), network.getDesiredResult())) {
                 System.out.println(String.format("Taught in %d iterations", training - 1));
                 break;
             }
             network.feedBackward();
+        }
+    }
+
+    @Test
+    public void testSix() throws Exception {
+        Random seed = new Random(System.nanoTime());
+        final int layersCount = 3;
+        final int minimumNeurons = 5;
+        int inputCountInFirstLayer = seed.nextInt(minimumNeurons);
+
+        //generate signal
+        Double[][] randomSignal = new Double[3][inputCountInFirstLayer];
+        for (int i = 0; i < randomSignal.length; i++) {
+            for (int j = 0; j < randomSignal[i].length; j++) {
+                randomSignal[i][j] = seed.nextDouble();
+            }
+        }
+
+        NeuralLayer[] layers = new NeuralLayer[layersCount];
+        NeuralNetwork network = new NeuralNetwork(0);
+        Neuron[] neurons;
+        // 1. generated neurons for each layers
+        int outputTapped = 0;
+        for (int l = 0; l < layersCount; l++) {
+            int neuronsInLayer = minimumNeurons + (int) (Math.random() * (minimumNeurons * 3));
+            neurons = new Neuron[neuronsInLayer];
+
+            for (int n = 0; n < neuronsInLayer; n++) {
+                Neuron neuron = new Neuron(false, new SigmoidalUnipolarFunction(1.0));
+                if (l == 0) {
+                    neuron.setSize(inputCountInFirstLayer);
+                } else if (l != layersCount - 1) {
+                    neuron.setSize(layers[l - 1].getSize());
+                    for (int nn = 0; nn < neuron.getSize(); nn++) {
+                        layers[l - 1].getNeuron(nn).addConnection(new NeuralInternalConnection(neuron, nn));
+                    }
+                } else {
+                    neuron.setSize(layers[l - 1].getSize());
+                    for (int nn = 0; nn < neuron.getSize(); nn++) {
+                        layers[l - 1].getNeuron(nn).addConnection(new NeuralInternalConnection(neuron, nn));
+                    }
+                    neuron.addConnection(new NeuralOutputConnection(network, outputTapped++));
+                }
+                neurons[n] = neuron;
+            }
+            layers[l] = new NeuralLayer(neurons);
+        }
+        network.setSize(layers[layers.length - 1].getSize());
+        for (NeuralLayer layer : layers) {
+            network.addLayer(layer);
+        }
+
+        Double[][] desiredResult = new Double[3][layers[layers.length - 1].getSize()];
+        for (int i = 0; i < desiredResult.length; i++) {
+            for (int j = 0; j < desiredResult[i].length; j++) {
+                desiredResult[i][j] = seed.nextDouble();
+            }
+        }
+
+        for (int i = 0, randomSignalLength = randomSignal.length; i < randomSignalLength; i++) {
+            network.initByRandom(-0.5, 0.5);
+            network.initWithSignal(randomSignal[i]);
+            network.setDesiredResult(desiredResult[i]);
+            System.out.println(String.format("Teaching for \nsignal=%s\ndesiredResult=%s",
+                    Arrays.toString(randomSignal[i]),
+                    Arrays.toString(desiredResult[i]))
+            );
+            int training = 0;
+            while ((training++) < 20) {
+                network.feedForward();
+                if (Arrays.equals(network.getResult(), network.getDesiredResult())) {
+                    System.out.println(String.format("Taught in %d iterations", training - 1));
+                    break;
+                }
+                network.feedBackward();
+            }
         }
     }
 }
