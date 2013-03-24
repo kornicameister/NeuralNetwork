@@ -20,19 +20,13 @@ import java.util.Arrays;
 public class Neuron extends _Neuron implements
         NeuralProcessable,
         NeuralTraversable {
-    private Function activationFunction;
     private Double delta = 0.0;
     private Double[] weights = new Double[0];
     private Double[] inputs = new Double[0];
 
-    protected Neuron(Boolean biasEnabled) {
-        super(biasEnabled);
-    }
-
     public Neuron(Boolean biasEnabled,
                   Function function) {
-        this(biasEnabled);
-        this.activationFunction = function;
+        super(biasEnabled, function);
     }
 
     public Neuron(Boolean biasEnabled,
@@ -111,9 +105,7 @@ public class Neuron extends _Neuron implements
         for (int i = 0; i < this.weights.length; i++) {
             result += this.inputs[i] * this.weights[i];
         }
-        if (this.biasEnabled) {
-            result += BIAS_VALUE * this.biasWeight;
-        }
+        result += BIAS_VALUE * this.biasWeight;
         return this.activationFunction.calculate(result);
     }
 
@@ -123,7 +115,9 @@ public class Neuron extends _Neuron implements
         for (int w = 0; w < this.weights.length; w++) {
             this.weights[w] = seed.nextDouble() * (higher - lower) + lower;
         }
-        this.biasWeight = seed.nextDouble() * (higher - lower) + lower;
+        if (this.biasEnabled) {
+            this.biasWeight = seed.nextDouble() * (higher - lower) + lower;
+        }
     }
 
     /**
@@ -157,7 +151,7 @@ public class Neuron extends _Neuron implements
      */
     @Override
     public void setInput(Double[] inputVector) {
-        this.inputs = inputVector;
+        this.inputs = inputVector.clone();
     }
 
     public Double[] getWeights() {
@@ -165,7 +159,7 @@ public class Neuron extends _Neuron implements
     }
 
     public void setWeights(Double... weights) {
-        this.weights = weights;
+        this.weights = weights.clone();
         if (this.inputs == null || this.inputs.length != this.weights.length) {
             this.inputs = new Double[this.weights.length];
         }
@@ -176,7 +170,7 @@ public class Neuron extends _Neuron implements
         return this.delta;
     }
 
-    public void setSize(int size) {
+    public void setSize(final int size) {
         this.weights = new Double[size];
         this.inputs = new Double[size];
     }
@@ -187,12 +181,15 @@ public class Neuron extends _Neuron implements
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Neuron{\n");
-        sb.append("neuronId=").append(neuronId).append("\n");
-        sb.append("weights=").append(Arrays.toString(weights == null ? new Double[]{} : weights)).append("\n");
-        sb.append("inputs=").append(Arrays.toString(inputs == null ? new Double[]{} : inputs)).append("\n");
-        sb.append("delta=").append(delta).append("\n");
-        sb.append("connections=").append(connections).append("\n");
+        final StringBuilder sb = new StringBuilder("Neuron{");
+        sb.append("weights=").append(Arrays.toString(weights));
+        sb.append(", inputs=").append(Arrays.toString(inputs));
+        sb.append(", delta=").append(delta);
+        sb.append(", biasEnabled=").append(biasEnabled);
+        if (biasEnabled) {
+            sb.append(", biasWeight=").append(biasWeight);
+            sb.append(", biasValue=").append(BIAS_VALUE);
+        }
         sb.append('}');
         return sb.toString();
     }

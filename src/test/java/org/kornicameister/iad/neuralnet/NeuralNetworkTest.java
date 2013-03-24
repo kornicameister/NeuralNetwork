@@ -125,10 +125,9 @@ public class NeuralNetworkTest {
         //generate signal
         Double[][] randomSignal = new Double[5][inputCountInFirstLayer];
         for (int i = 0; i < randomSignal.length; i++) {
-            for (int j = 1; j < randomSignal[i].length; j++) {
+            for (int j = 0; j < randomSignal[i].length; j++) {
                 randomSignal[i][j] = seed.nextDouble();
             }
-            randomSignal[i][0] = 1.0;
         }
 
         NeuralLayer[] layers = new NeuralLayer[layersCount];

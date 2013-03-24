@@ -1,6 +1,7 @@
 package org.kornicameister.iad.neuralnet.impl;
 
 import org.kornicameister.iad.neuralnet.core.NeuralConnection;
+import org.kornicameister.iad.neuralnet.function.Function;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -25,6 +26,7 @@ public abstract class _Neuron {
      */
     protected final static Double BIAS_VALUE = 1.0;
 
+    protected Function activationFunction;
     protected final Integer neuronId = NEURON_ID++;
     protected List<NeuralConnection> connections = new LinkedList<>();
     protected Random seed = new Random();
@@ -33,16 +35,17 @@ public abstract class _Neuron {
      * If set to true, then additional weight is created for bias
      * and bias is used in neuron's computation process.
      */
-    protected Boolean biasEnabled;
+    protected final Boolean biasEnabled;
     /**
      * Bias weight, by default equal to 1.0,
      * overridable via Neuron constructors
      * or setter method
      */
-    protected Double biasWeight = 1.0;
+    protected Double biasWeight = 0.0;
 
-    protected _Neuron(Boolean biasEnabled) {
+    protected _Neuron(Boolean biasEnabled, Function activationFunction) {
         this.biasEnabled = biasEnabled;
+        this.activationFunction = activationFunction;
     }
 
     public Integer getNeuronId() {
@@ -61,15 +64,32 @@ public abstract class _Neuron {
         return biasEnabled;
     }
 
-    public void setBiasEnabled(Boolean biasEnabled) {
-        this.biasEnabled = biasEnabled;
-    }
-
     public Double getBiasWeight() {
         return biasWeight;
     }
 
     public void setBiasWeight(Double biasWeight) {
         this.biasWeight = biasWeight;
+    }
+
+    public Function getActivationFunction() {
+        return activationFunction;
+    }
+
+    public void setActivationFunction(Function activationFunction) {
+        this.activationFunction = activationFunction;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("_Neuron{");
+        sb.append("seed=").append(seed);
+        sb.append(", neuronId=").append(neuronId);
+        sb.append(", connections=").append(connections);
+        sb.append(", biasWeight=").append(biasWeight);
+        sb.append(", biasEnabled=").append(biasEnabled);
+        sb.append(", activationFunction=").append(activationFunction);
+        sb.append('}');
+        return sb.toString();
     }
 }
