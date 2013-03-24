@@ -28,20 +28,20 @@ public class NeuralLayer implements NeuralProcessable {
     }
 
     @Override
-    public void teach() {
+    public void feedBackward() {
         ListIterator<Neuron> neuronListIterator = this.neurons.listIterator(this.neurons.size());
         while (neuronListIterator.hasPrevious()) {
             Neuron neuron = neuronListIterator.previous();
             LOGGER.info(String.format("Teaching neuron %s", neuron));
-            neuron.teach();
+            neuron.feedBackward();
         }
     }
 
     @Override
-    public void process() {
+    public void feedForward() {
         for (Neuron neuron : this.neurons) {
             LOGGER.info(String.format("Processing neuron %s", neuron));
-            neuron.process();
+            neuron.feedForward();
         }
     }
 

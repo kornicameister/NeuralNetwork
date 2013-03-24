@@ -38,7 +38,7 @@ public class NeuralInternalConnection extends AbstractConnection {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
-        sb.append("{neuron=").append(((Neuron) neuron).getId());
+        sb.append("{neuron=").append(((Neuron) neuron).getNeuronId());
         sb.append(", slot=").append(this.getSlot());
         sb.append('}');
         return sb.toString();

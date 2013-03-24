@@ -58,20 +58,20 @@ public class NeuralNetwork implements NeuralProcessable {
      * way...teaching from output to input.
      */
     @Override
-    public void teach() {
+    public void feedBackward() {
         ListIterator<NeuralLayer> iterator = this.layerList.listIterator(this.layerList.size());
         while (iterator.hasPrevious()) {
             final NeuralLayer layer = iterator.previous();
             LOGGER.info(String.format("Teaching layer %s", layer));
-            layer.teach();
+            layer.feedBackward();
         }
     }
 
     @Override
-    public void process() {
+    public void feedForward() {
         for (NeuralLayer layer : this.layerList) {
             LOGGER.info(String.format("Processing layer %s", layer));
-            layer.process();
+            layer.feedForward();
         }
         LOGGER.info(String.format("Processed and computed with result=%s", Arrays.deepToString(this.result)));
     }

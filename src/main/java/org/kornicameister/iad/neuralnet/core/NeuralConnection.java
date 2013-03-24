@@ -34,7 +34,7 @@ public interface NeuralConnection {
     /**
      * This method is used to retrieve information up from neuronal network
      * output and push it to elementary neuron. Having this method
-     * implemented allows each neuron to teach.
+     * implemented allows each neuron to feedBackward.
      * <a href="http://en.wikipedia.org/wiki/Delta_Rule">Delta Rule</a>
      *
      * @return teaching vector

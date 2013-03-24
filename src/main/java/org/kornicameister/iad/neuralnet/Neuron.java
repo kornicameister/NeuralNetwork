@@ -4,10 +4,9 @@ import org.kornicameister.iad.neuralnet.core.NeuralConnection;
 import org.kornicameister.iad.neuralnet.core.NeuralProcessable;
 import org.kornicameister.iad.neuralnet.core.NeuralTraversable;
 import org.kornicameister.iad.neuralnet.function.Function;
+import org.kornicameister.iad.neuralnet.impl._Neuron;
 
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * {@link Neuron} is basic brick used to built
@@ -18,39 +17,43 @@ import java.util.List;
  * @since 0.0.1
  */
 //TODO extra weight and input = 1 is not included
-public class Neuron implements
+public class Neuron extends _Neuron implements
         NeuralProcessable,
         NeuralTraversable {
-    private final static Double LEARNING_FACTOR = 0.4;
-    private static Integer NEURON_ID = 0;
-    private Integer neuronId = NEURON_ID++;
+    private Function activationFunction;
+    private Double delta = 0.0;
     private Double[] weights = new Double[0];
     private Double[] inputs = new Double[0];
-    private Function activationFunction;
-    private List<NeuralConnection> connections = new LinkedList<>();
-    private Double delta = 0.0;
 
-    public Neuron(Function function) {
+    protected Neuron(Boolean biasEnabled) {
+        super(biasEnabled);
+    }
+
+    public Neuron(Boolean biasEnabled,
+                  Function function) {
+        this(biasEnabled);
         this.activationFunction = function;
     }
 
-    public Neuron(Function function,
+    public Neuron(Boolean biasEnabled,
+                  Function function,
                   NeuralConnection... connections) {
-        this(function);
+        this(biasEnabled, function);
         this.connections.addAll(Arrays.asList(connections));
     }
 
-    public Neuron(Function function,
+    public Neuron(Boolean biasEnabled,
+                  Function function,
                   Double[] weights,
                   NeuralConnection... connections) {
-        this(function, connections);
-        this.setSize(this.weights.length + 1);
+        this(biasEnabled, function, connections);
+        this.setSize(this.weights.length);
         this.weights = weights;
         this.inputs = new Double[this.weights.length];
     }
 
     /**
-     * Teaching is process that is considered as reversed to
+     * Teaching is feedForward that is considered as reversed to
      * processing. By that, teaching neuron in context of network
      * is based on:
      * <ul>
@@ -59,7 +62,7 @@ public class Neuron implements
      * </ul>
      */
     @Override
-    public void teach() {
+    public void feedBackward() {
         this.delta = 0.0;
         for (NeuralConnection connection : this.connections) {
             delta += connection.getDelta();
@@ -78,8 +81,8 @@ public class Neuron implements
      * and pushing it further.
      */
     @Override
-    public void process() {
-        Double result = this.computeOutput();
+    public void feedForward() {
+        final Double result = this.computeOutput();
         for (NeuralConnection connectible : this.connections) {
             connectible.pushResultForward(result);
         }
@@ -92,17 +95,24 @@ public class Neuron implements
      * position in the neuron.
      * <pre>
      *     <code>
-     *         y = f(w_0 + sum_{i={1,n}}(w_i * x_i))
+     *         y = f(sum_{i={0,n}}(w_i * x_i))
      *     </code>
      *     x stands for neuron's input at given i's position.
      * </pre>
+     * Bias, as stands here <a href="http://natureofcode.com/book/chapter-10-neural-networks/">Point 10.3</a>,
+     * is included in the output.
      *
      * @return computed output
+     * @see Neuron#BIAS_VALUE
+     * @see Neuron#biasEnabled
      */
     private Double computeOutput() {
-        Double result = this.weights[0];
-        for (int i = 1; i < this.weights.length; i++) {
+        Double result = 0.0;
+        for (int i = 0; i < this.weights.length; i++) {
             result += this.inputs[i] * this.weights[i];
+        }
+        if (this.biasEnabled) {
+            result += BIAS_VALUE * this.biasWeight;
         }
         return this.activationFunction.calculate(result);
     }
@@ -113,7 +123,7 @@ public class Neuron implements
         for (int w = 0; w < this.weights.length; w++) {
             this.weights[w] = seed.nextDouble() * (higher - lower) + lower;
         }
-        this.inputs[0] = 1.0;
+        this.biasWeight = seed.nextDouble() * (higher - lower) + lower;
     }
 
     /**
@@ -166,10 +176,6 @@ public class Neuron implements
         return this.delta;
     }
 
-    public boolean addConnection(NeuralConnection... neuralConnections) {
-        return connections.addAll(Arrays.asList(neuralConnections));
-    }
-
     public void setSize(int size) {
         this.weights = new Double[size];
         this.inputs = new Double[size];
@@ -177,10 +183,6 @@ public class Neuron implements
 
     public int getSize() {
         return this.weights.length;
-    }
-
-    public Integer getId() {
-        return this.neuronId;
     }
 
     @Override

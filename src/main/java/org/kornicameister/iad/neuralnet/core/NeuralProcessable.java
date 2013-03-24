@@ -1,7 +1,5 @@
 package org.kornicameister.iad.neuralnet.core;
 
-import java.util.Random;
-
 /**
  * Interface showing how each significant brick
  * of the network works. There is no difference when
@@ -12,21 +10,17 @@ import java.util.Random;
  * @since 0.0.1
  */
 public interface NeuralProcessable {
-    /**
-     * Seed to be used in random initialization
-     */
-    static Random seed = new Random();
 
     /**
-     * This method implementation is designed to support teaching process. For
+     * This method implementation is designed to support teaching feedForward. For
      * example method of backwards propagation can be used.
      */
-    void teach();
+    void feedBackward();
 
     /**
-     * Use this method to process input of neural network.
+     * Use this method to feedForward input of neural network.
      */
-    void process();
+    void feedForward();
 
     /**
      * Method to initialize either network,layer or particular neuron
