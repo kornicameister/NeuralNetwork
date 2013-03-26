@@ -40,8 +40,8 @@ public class Neuron extends _Neuron implements
                   Double[] weights,
                   NeuralConnection... connections) {
         this(biasEnabled, function, connections);
-        this.setSize(this.weights.length);
         this.setWeights(weights);
+        this.inputs = new Double[this.weights.length];
     }
 
     /**
@@ -62,12 +62,15 @@ public class Neuron extends _Neuron implements
                 * LEARNING_FACTOR
                 * this.activationFunction.derivativeCalculate(guess);
 
-        LOGGER.info(String.format("Neuron[%d] -> guess=%f,delta=%f,weight_update=%f",
-                this.neuronId, guess, this.delta, weightUpdater));
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format("Neuron[%d] -> guess=%f,delta=%f,weight_update=%f",
+                    this.neuronId, guess, this.delta, weightUpdater));
+        }
 
         for (int i = 0; i < this.weights.length; i++) {
             this.weights[i] += (weightUpdater * this.inputs[i]);
         }
+        this.setBiasWeight(this.biasWeight + (weightUpdater * BIAS_VALUE));
     }
 
     private void recomputeDelta() {

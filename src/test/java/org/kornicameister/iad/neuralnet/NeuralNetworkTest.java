@@ -311,30 +311,32 @@ public class NeuralNetworkTest {
             network.addLayer(layer);
         }
 
+        double higher = 2.0, lower = -2.0;
         Double[][] desiredResult = new Double[3][layers[layers.length - 1].getSize()];
         for (int i = 0; i < desiredResult.length; i++) {
             for (int j = 0; j < desiredResult[i].length; j++) {
-                desiredResult[i][j] = seed.nextDouble();
+                desiredResult[i][j] = seed.nextDouble() * (higher - lower) + lower;
             }
         }
 
+        PrintWriter outError;
         for (int i = 0, randomSignalLength = randomSignal.length; i < randomSignalLength; i++) {
-            network.initByRandom(-0.5, 0.5);
+            network.initByRandom(-1.5, 1.5);
             network.initWithSignal(randomSignal[i]);
             network.setDesiredResult(desiredResult[i]);
             System.out.println(String.format("Teaching for \nsignal=%s\ndesiredResult=%s",
                     Arrays.toString(randomSignal[i]),
                     Arrays.toString(desiredResult[i]))
             );
+            outError = new PrintWriter(new File(String.format("errors/err_%s", i)));
             int training = 0;
-            while ((training++) < 20) {
+            while ((training++) < 1000) {
                 network.feedForward();
-                if (Arrays.equals(network.getResult(), network.getDesiredResult())) {
-                    System.out.println(String.format("Taught in %d iterations", training - 1));
-                    break;
-                }
+                outError.print(String.format("%d %f", training - 1, network.calculateError()));
+                outError.println();
                 network.feedBackward();
             }
+            outError.close();
         }
     }
 }

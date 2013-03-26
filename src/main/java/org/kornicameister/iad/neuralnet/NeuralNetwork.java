@@ -92,6 +92,23 @@ public class NeuralNetwork extends _NeuralNetwork implements NeuralProcessable {
         }
     }
 
+    public void setSize(int size) {
+        this.result = new Double[size];
+        this.desiredResult = new Double[size];
+    }
+
+    public Integer getSize() {
+        return this.result.length;
+    }
+
+    public Double calculateError() {
+        Double err = 0.0;
+        for (int i = 0; i < this.desiredResult.length; i++) {
+            err += Math.pow(this.desiredResult[i] - this.result[i], 2);
+        }
+        return err / 2.0;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("NeuralNetwork{");
@@ -102,12 +119,5 @@ public class NeuralNetwork extends _NeuralNetwork implements NeuralProcessable {
         return sb.toString();
     }
 
-    public void setSize(int size) {
-        this.result = new Double[size];
-        this.desiredResult = new Double[size];
-    }
 
-    public Integer getSize() {
-        return this.result.length;
-    }
 }
