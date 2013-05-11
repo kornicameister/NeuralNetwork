@@ -4,7 +4,6 @@ import org.kornicameister.iad.neuralnet.core.NeuralProcessable;
 import org.kornicameister.iad.neuralnet.impl._NeuralLayer;
 
 import java.util.Arrays;
-import java.util.ListIterator;
 
 /**
  * {@link NeuralLayer} represents set of neurons
@@ -24,9 +23,7 @@ public class NeuralLayer extends _NeuralLayer implements NeuralProcessable {
 
     @Override
     public void feedBackward() {
-        ListIterator<Neuron> neuronListIterator = this.neurons.listIterator(this.neurons.size());
-        while (neuronListIterator.hasPrevious()) {
-            Neuron neuron = neuronListIterator.previous();
+        for (Neuron neuron : this.neurons) {
             neuron.feedBackward();
         }
     }

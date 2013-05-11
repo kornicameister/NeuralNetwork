@@ -76,7 +76,9 @@ public class NeuralNetwork extends _NeuralNetwork implements NeuralProcessable {
         for (NeuralLayer layer : this.layerList) {
             layer.feedForward();
         }
-        LOGGER.info(String.format("Processed and computed with result=%s", Arrays.deepToString(this.result)));
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format("Processed and computed with result=%s", Arrays.deepToString(this.result)));
+        }
     }
 
     @Override
@@ -92,13 +94,13 @@ public class NeuralNetwork extends _NeuralNetwork implements NeuralProcessable {
         }
     }
 
+    public Integer getSize() {
+        return this.result.length;
+    }
+
     public void setSize(int size) {
         this.result = new Double[size];
         this.desiredResult = new Double[size];
-    }
-
-    public Integer getSize() {
-        return this.result.length;
     }
 
     public Double calculateError() {

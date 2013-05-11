@@ -20,12 +20,16 @@ import java.util.Arrays;
 public class Neuron extends _Neuron implements
         NeuralProcessable,
         NeuralTraversable {
-    private Double delta = 0.0;
     private final static Logger LOGGER = Logger.getLogger(Neuron.class);
+    private Double delta = 0.0;
 
     public Neuron(Boolean biasEnabled,
-                  Function function) {
-        super(biasEnabled, function);
+                  Function function,
+                  Double[] weights,
+                  NeuralConnection... connections) {
+        this(biasEnabled, function, connections);
+        this.setWeights(weights);
+        this.inputs = new Double[this.weights.length];
     }
 
     public Neuron(Boolean biasEnabled,
@@ -36,12 +40,26 @@ public class Neuron extends _Neuron implements
     }
 
     public Neuron(Boolean biasEnabled,
+                  Function function) {
+        super(biasEnabled, function);
+    }
+
+    public Neuron(Boolean biasEnabled,
                   Function function,
                   Double[] weights,
+                  Double momentumRate,
                   NeuralConnection... connections) {
-        this(biasEnabled, function, connections);
+        this(biasEnabled, function, momentumRate, connections);
         this.setWeights(weights);
         this.inputs = new Double[this.weights.length];
+    }
+
+    public Neuron(Boolean biasEnabled,
+                  Function activationFunction,
+                  Double momentumRate,
+                  NeuralConnection... connections) {
+        this(biasEnabled, activationFunction, connections);
+        this.momentumRate = momentumRate;
     }
 
     /**
@@ -55,10 +73,9 @@ public class Neuron extends _Neuron implements
      */
     @Override
     public void feedBackward() {
-        Double guess = this.computeOutput();
-        this.recomputeDelta();
-        Double weightUpdater = 2.0
-                * delta
+        final Double guess = this.computeOutput();
+        final Double weightUpdater = 2.0
+                * this.recomputeDelta()
                 * LEARNING_FACTOR
                 * this.activationFunction.derivativeCalculate(guess);
 
@@ -68,27 +85,18 @@ public class Neuron extends _Neuron implements
         }
 
         for (int i = 0; i < this.weights.length; i++) {
-            this.weights[i] += (weightUpdater * this.inputs[i]);
+            this.weightsChanges[i] = (weightUpdater * this.inputs[i]) +
+                    this.momentumRate * (this.weights[i] - this.weightsChanges[i]);
+            this.weights[i] += this.weightsChanges[i];
         }
-        this.setBiasWeight(this.biasWeight + (weightUpdater * BIAS_VALUE));
-    }
 
-    private void recomputeDelta() {
-        this.delta = 0.0;
-        for (NeuralConnection connection : this.connections) {
-            delta += connection.getDelta();
-        }
-    }
+        if (this.biasEnabled) {
+            final int biasWeight = this.weightsChanges.length - 1;
 
-    /**
-     * Processing neuron is based on computing output value
-     * and pushing it further.
-     */
-    @Override
-    public void feedForward() {
-        final Double result = this.computeOutput();
-        for (NeuralConnection connectible : this.connections) {
-            connectible.pushResultForward(result);
+            this.weightsChanges[biasWeight] = (weightUpdater * BIAS_VALUE) +
+                    this.momentumRate * (this.biasWeight + this.weightsChanges[biasWeight]);
+
+            this.biasWeight += this.weightsChanges[biasWeight];
         }
     }
 
@@ -110,13 +118,27 @@ public class Neuron extends _Neuron implements
      * @see Neuron#BIAS_VALUE
      * @see Neuron#biasEnabled
      */
-    private Double computeOutput() {
+    public Double computeOutput() {
         Double result = 0.0;
         for (int i = 0; i < this.weights.length; i++) {
             result += this.inputs[i] * this.weights[i];
         }
-        result += BIAS_VALUE * this.biasWeight;
+        if (this.biasEnabled) {
+            result += BIAS_VALUE * this.biasWeight;
+        }
         return this.activationFunction.calculate(result);
+    }
+
+    /**
+     * Processing neuron is based on computing output value
+     * and pushing it further.
+     */
+    @Override
+    public void feedForward() {
+        final Double result = this.computeOutput();
+        for (NeuralConnection connectible : this.connections) {
+            connectible.pushResultForward(result);
+        }
     }
 
     @Override
@@ -128,6 +150,14 @@ public class Neuron extends _Neuron implements
         if (this.biasEnabled) {
             this.biasWeight = seed.nextDouble() * (higher - lower) + lower;
         }
+    }
+
+    private Double recomputeDelta() {
+        this.delta = 0.0;
+        for (NeuralConnection connection : this.connections) {
+            delta += connection.getDelta();
+        }
+        return this.delta;
     }
 
     @Override

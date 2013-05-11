@@ -13,42 +13,49 @@ import java.util.Random;
  * @since 0.0.1
  */
 public abstract class _Neuron {
-    private static Integer NEURON_ID = 0;
     /**
      * By this variable neuron is kept from learning
      * two fast by backward propagation method (gradient)
      */
-    protected final static Double LEARNING_FACTOR = 0.1;
+    protected final static Double LEARNING_FACTOR = 0.005;
     /**
      * If bias input is enabled for neuron, therefore
      * this value is used and extra weight is computed
      * for this bias.
      */
     protected final static Double BIAS_VALUE = 1.0;
-
-    protected Function activationFunction;
+    private static Integer NEURON_ID = 0;
     protected final Integer neuronId = NEURON_ID++;
-    protected List<NeuralConnection> connections = new LinkedList<>();
-    protected Random seed = new Random();
-
     /**
      * If set to true, then additional weight is created for bias
      * and bias is used in neuron's computation process.
      */
     protected final Boolean biasEnabled;
+    protected Function activationFunction;
+    protected List<NeuralConnection> connections = new LinkedList<>();
+    protected Random seed = new Random();
+    protected Double momentumRate = 0.5;
     /**
      * Bias weight, by default equal to 1.0,
      * overridable via Neuron constructors
      * or setter method
      */
     protected Double biasWeight = 0.0;
-
     protected Double[] weights = new Double[0];
+    protected Double[] weightsChanges = new Double[0];
     protected Double[] inputs = new Double[0];
+    protected Double learningFactor;
+
+    protected _Neuron(Boolean biasEnabled, Function activationFunction, Double momentumRate) {
+        this(biasEnabled, activationFunction);
+        this.momentumRate = momentumRate;
+        this.learningFactor = LEARNING_FACTOR;
+    }
 
     protected _Neuron(Boolean biasEnabled, Function activationFunction) {
         this.biasEnabled = biasEnabled;
         this.activationFunction = activationFunction;
+        this.learningFactor = LEARNING_FACTOR;
     }
 
     public Integer getNeuronId() {
@@ -83,15 +90,14 @@ public abstract class _Neuron {
         this.activationFunction = activationFunction;
     }
 
-    public void setSize(final int size) {
-        this.weights = new Double[size];
-        this.inputs = new Double[size];
-    }
-
     public int getSize() {
         return this.weights.length;
     }
 
+    public void setSize(final int size) {
+        this.weights = new Double[size];
+        this.inputs = new Double[size];
+    }
 
     /**
      * Returns an index for given index
@@ -130,9 +136,29 @@ public abstract class _Neuron {
 
     public void setWeights(Double... weights) {
         this.weights = weights;
+        this.weightsChanges = new Double[this.weights.length + (this.biasEnabled ? 1 : 0)];
+        for (int i = 0; i < this.weightsChanges.length; i++) {
+            this.weightsChanges[i] = Double.MIN_NORMAL;
+        }
         if (this.inputs == null || this.inputs.length != this.weights.length) {
             this.inputs = new Double[this.weights.length];
         }
+    }
+
+    public Double getMomentumRate() {
+        return momentumRate;
+    }
+
+    public void setMomentumRate(Double momentumRate) {
+        this.momentumRate = momentumRate;
+    }
+
+    public Double getLearningFactor() {
+        return learningFactor;
+    }
+
+    public void setLearningFactor(Double learningFactor) {
+        this.learningFactor = learningFactor;
     }
 
     @Override
