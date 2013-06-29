@@ -1,6 +1,4 @@
-package org.kornicameister.iad.neuralnet.values;
-
-import org.kornicameister.iad.neuralnet.Neuron;
+package org.kornicameister.iad.neuralnet.data;
 
 import java.util.Arrays;
 import java.util.List;

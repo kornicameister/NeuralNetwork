@@ -1,8 +1,8 @@
-package org.kornicameister.iad.neuralnet.values;
+package org.kornicameister.iad.neuralnet.data;
 
 import com.google.common.base.Preconditions;
-import org.kornicameister.iad.neuralnet.Neuron;
 import org.kornicameister.iad.neuralnet.core.NeuralData;
+import org.kornicameister.iad.neuralnet.core.impl.Neuron;
 
 import java.util.Arrays;
 
