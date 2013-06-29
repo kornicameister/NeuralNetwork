@@ -1,4 +1,4 @@
-package org.kornicameister.iad.neuralnet.core;
+package org.kornicameister.iad.neuralnet;
 
 /**
  * Interface showing how each significant brick
@@ -14,19 +14,15 @@ public interface NeuralProcessable {
     /**
      * This method implementation is designed to support teaching feedForward. For
      * example method of backwards propagation can be used.
+     *
+     * @param delta value of an error, that will be used in neurons teaching process
      */
-    void feedBackward();
+    void feedBackward(final double delta);
 
     /**
      * Use this method to feedForward input of neural network.
-     */
-    void feedForward();
-
-    /**
-     * Method to initialize either network,layer or particular neuron
      *
-     * @param lower  bound of initialization
-     * @param higher bound of initialization
+     * @param signal signal to be processed
      */
-    void initByRandom(Double lower, Double higher);
+    void feedForward(final Double[] signal);
 }

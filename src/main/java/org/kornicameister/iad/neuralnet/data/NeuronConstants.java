@@ -24,15 +24,15 @@ public class NeuronConstants {
         return activationFunction;
     }
 
-    public Boolean getBiasEnabled() {
+    public Boolean isBiasEnabled() {
         return biasEnabled;
     }
 
-    public Double getMomentumRate() {
+    public Double getMomentum() {
         return momentumRate;
     }
 
-    public Double getLearningFactor() {
+    public Double getLearningConstant() {
         return learningFactor;
     }
 

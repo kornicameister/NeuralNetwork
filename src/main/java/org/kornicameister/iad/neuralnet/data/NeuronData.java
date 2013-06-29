@@ -1,8 +1,9 @@
 package org.kornicameister.iad.neuralnet.data;
 
 import com.google.common.base.Preconditions;
-import org.kornicameister.iad.neuralnet.core.NeuralData;
-import org.kornicameister.iad.neuralnet.core.impl.Neuron;
+import org.kornicameister.iad.neuralnet.NeuralData;
+import org.kornicameister.iad.neuralnet.impl.Neuron;
+import org.kornicameister.iad.neuralnet.util.ArraysUtils;
 
 import java.util.Arrays;
 
@@ -16,6 +17,10 @@ public class NeuronData implements NeuralData {
     private Double[] oldWeights;
     private Double[] weights;
     private Double[] signals;
+
+    public NeuronData(final Double[] weights) {
+        this(ArraysUtils.newDoubleArray(weights.length), weights);
+    }
 
     public NeuronData(Double[] signals, Double[] weights) {
         this.signals = signals.clone();
@@ -40,7 +45,7 @@ public class NeuronData implements NeuralData {
 
     @Override
     public void setSignals(Double[] signals) {
-        this.signals = signals;
+        this.signals = signals.clone();
     }
 
     @Override

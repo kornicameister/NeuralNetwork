@@ -1,5 +1,7 @@
 package org.kornicameister.iad.neuralnet.data;
 
+import org.kornicameister.iad.neuralnet.util.ArraysUtils;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,6 +14,10 @@ public class NeuronBiasData extends NeuronData {
     public static final Double BIAS_VALUE = 1.0;
     private Double biasWeight;
     private Double oldBiasWeight;
+
+    public NeuronBiasData(final Double biasWeight, final Double[] weights) {
+        this(biasWeight, ArraysUtils.newDoubleArray(weights.length), weights);
+    }
 
     public NeuronBiasData(Double biasWeight, Double[] signals, Double[] weights) {
         super(signals, weights);
