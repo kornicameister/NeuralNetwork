@@ -25,6 +25,13 @@ public class SigmoidalUnipolarFunction extends Function {
     }
 
     @Override
+    public String toString() {
+        return "SigmoidalUnipolarFunction{" +
+                "beta=" + beta +
+                "} " + super.toString();
+    }
+
+    @Override
     public Double calculate(Double... args) {
         return DEFAULT_BETA / (DEFAULT_BETA + Math.exp(-this.beta * args[0]));
     }
@@ -35,11 +42,5 @@ public class SigmoidalUnipolarFunction extends Function {
         return calculatedDouble * (1 - calculatedDouble);
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("SigmoidalUnipolarFunction{");
-        sb.append("beta=").append(beta);
-        sb.append('}');
-        return sb.toString();
-    }
+
 }

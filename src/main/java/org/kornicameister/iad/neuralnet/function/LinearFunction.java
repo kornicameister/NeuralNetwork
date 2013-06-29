@@ -41,10 +41,9 @@ public class LinearFunction extends Function {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("LinearFunction{");
-        sb.append("bConstant=").append(bConstant);
-        sb.append(", aConstant=").append(aConstant);
-        sb.append('}');
-        return sb.toString();
+        return "LinearFunction{" +
+                "aConstant=" + aConstant +
+                ", bConstant=" + bConstant +
+                "} " + super.toString();
     }
 }

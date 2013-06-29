@@ -16,4 +16,13 @@ public class SigmoidalBipolarFunction extends SigmoidalUnipolarFunction {
     public Double derivativeCalculate(Double arg) {
         return DOUBLE * ((this.beta * Math.exp(arg * this.beta)) / (Math.pow(DOUBLE, Math.exp(this.beta * arg) + 1)));
     }
+
+    @Override
+    public String toString() {
+        return "SigmoidalBipolarFunction{" +
+                "beta=" + beta +
+                "} " + super.toString();
+    }
+
+
 }

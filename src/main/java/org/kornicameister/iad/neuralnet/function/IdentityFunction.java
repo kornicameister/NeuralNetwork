@@ -16,4 +16,12 @@ public class IdentityFunction extends LinearFunction {
     public Double derivativeCalculate(Double arg) {
         return DOUBLE;
     }
+
+    @Override
+    public String toString() {
+        return "IdentityFunction{" +
+                "aConstant=" + aConstant +
+                ", bConstant=" + bConstant +
+                "} " + super.toString();
+    }
 }
