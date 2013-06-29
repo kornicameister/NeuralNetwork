@@ -1,7 +1,7 @@
 package org.kornicameister.iad.neuralnet.traverse;
 
 import org.kornicameister.iad.neuralnet.NeuralNetwork;
-import org.kornicameister.iad.neuralnet.core.AbstractConnection;
+import org.kornicameister.iad.neuralnet.core.Arc;
 
 /**
  * Class represents connection
@@ -11,10 +11,10 @@ import org.kornicameister.iad.neuralnet.core.AbstractConnection;
  * @author kornicameister
  * @since 0.0.1
  */
-public class NeuralOutputConnection extends AbstractConnection {
+public class OutputArc extends Arc {
     private final NeuralNetwork network;
 
-    public NeuralOutputConnection(NeuralNetwork network, int slot) {
+    public OutputArc(NeuralNetwork network, int slot) {
         super(slot);
         this.network = network;
     }

@@ -2,6 +2,7 @@ package org.kornicameister.iad.neuralnet;
 
 import org.apache.log4j.Logger;
 import org.kornicameister.iad.neuralnet.core.NeuralConnection;
+import org.kornicameister.iad.neuralnet.core.NeuralLearner;
 import org.kornicameister.iad.neuralnet.core.NeuralProcessable;
 import org.kornicameister.iad.neuralnet.core.NeuralTraversable;
 import org.kornicameister.iad.neuralnet.function.Function;
@@ -19,7 +20,8 @@ import java.util.Arrays;
  */
 public class Neuron extends _Neuron implements
         NeuralProcessable,
-        NeuralTraversable {
+        NeuralTraversable,
+        NeuralLearner {
     private final static Logger LOGGER = Logger.getLogger(Neuron.class);
     private Double delta = 0.0;
 
@@ -62,6 +64,20 @@ public class Neuron extends _Neuron implements
         this.momentumRate = momentumRate;
     }
 
+    @Override
+    public Double computeError() {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format("Neuron [%d] >>> Computing an error...", this.getNeuronId()));
+        }
+
+        return null;
+    }
+
+    @Override
+    public void adjustWeights(Double error) {
+
+    }
+
     /**
      * Teaching is feedForward that is considered as reversed to
      * processing. By that, teaching neuron in context of network
@@ -73,30 +89,51 @@ public class Neuron extends _Neuron implements
      */
     @Override
     public void feedBackward() {
-        final Double guess = this.computeOutput();
         final Double weightUpdater = 2.0
                 * this.recomputeDelta()
-                * LEARNING_FACTOR
-                * this.activationFunction.derivativeCalculate(guess);
-
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(String.format("Neuron[%d] -> guess=%f,delta=%f,weight_update=%f",
-                    this.neuronId, guess, this.delta, weightUpdater));
-        }
+                * LEARNING_FACTOR;
 
         for (int i = 0; i < this.weights.length; i++) {
-            this.weightsChanges[i] = (weightUpdater * this.inputs[i]) +
+            this.weights[i] += weightUpdater * this.inputs[i] +
                     this.momentumRate * (this.weights[i] - this.weightsChanges[i]);
-            this.weights[i] += this.weightsChanges[i];
         }
 
+        this.weightsChanges = this.weights.clone();
+
         if (this.biasEnabled) {
-            final int biasWeight = this.weightsChanges.length - 1;
+            this.biasWeight += weightUpdater;
+        }
+    }
 
-            this.weightsChanges[biasWeight] = (weightUpdater * BIAS_VALUE) +
-                    this.momentumRate * (this.biasWeight + this.weightsChanges[biasWeight]);
+    private Double recomputeDelta() {
+        Double delta = 0.0;
+        for (NeuralConnection connection : this.connections) {
+            delta += connection.getDelta();
+        }
+        this.delta = delta * this.activationFunction.derivativeCalculate(this.computeOutput());
+        return this.delta;
+    }
 
-            this.biasWeight += this.weightsChanges[biasWeight];
+    /**
+     * Processing neuron is based on computing output value
+     * and pushing it further.
+     */
+    @Override
+    public void feedForward() {
+        final Double result = this.computeOutput();
+        for (NeuralConnection connectible : this.connections) {
+            connectible.pushResultForward(result);
+        }
+    }
+
+    @Override
+    public void initByRandom(Double lower, Double higher) {
+        seed.setSeed(System.nanoTime());
+        for (int w = 0; w < this.weights.length; w++) {
+            this.weights[w] = seed.nextDouble() * (higher - lower) + lower;
+        }
+        if (this.biasEnabled) {
+            this.biasWeight = seed.nextDouble() * (higher - lower) + lower;
         }
     }
 
@@ -127,37 +164,6 @@ public class Neuron extends _Neuron implements
             result += BIAS_VALUE * this.biasWeight;
         }
         return this.activationFunction.calculate(result);
-    }
-
-    /**
-     * Processing neuron is based on computing output value
-     * and pushing it further.
-     */
-    @Override
-    public void feedForward() {
-        final Double result = this.computeOutput();
-        for (NeuralConnection connectible : this.connections) {
-            connectible.pushResultForward(result);
-        }
-    }
-
-    @Override
-    public void initByRandom(Double lower, Double higher) {
-        seed.setSeed(System.nanoTime());
-        for (int w = 0; w < this.weights.length; w++) {
-            this.weights[w] = seed.nextDouble() * (higher - lower) + lower;
-        }
-        if (this.biasEnabled) {
-            this.biasWeight = seed.nextDouble() * (higher - lower) + lower;
-        }
-    }
-
-    private Double recomputeDelta() {
-        this.delta = 0.0;
-        for (NeuralConnection connection : this.connections) {
-            delta += connection.getDelta();
-        }
-        return this.delta;
     }
 
     @Override

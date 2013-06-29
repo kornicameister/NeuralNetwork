@@ -2,8 +2,8 @@ package org.kornicameister.iad.neuralnet;
 
 import org.junit.Test;
 import org.kornicameister.iad.neuralnet.function.SigmoidalUnipolarFunction;
-import org.kornicameister.iad.neuralnet.traverse.NeuralInternalConnection;
-import org.kornicameister.iad.neuralnet.traverse.NeuralOutputConnection;
+import org.kornicameister.iad.neuralnet.traverse.InternalArc;
+import org.kornicameister.iad.neuralnet.traverse.OutputArc;
 import org.kornicameister.iad.neuralnet.util.ArraysUtils;
 
 import java.io.*;
@@ -74,22 +74,22 @@ public class NeuralNetworkTest2 {
         neuron_23.setBiasWeight(0.0);
         neuron_24.setBiasWeight(0.0);
 
-        neuron_11.addConnection(new NeuralInternalConnection(neuron_21, 0));
-        neuron_12.addConnection(new NeuralInternalConnection(neuron_21, 1));
+        neuron_11.addConnection(new InternalArc(neuron_21, 0));
+        neuron_12.addConnection(new InternalArc(neuron_21, 1));
 
-        neuron_11.addConnection(new NeuralInternalConnection(neuron_22, 0));
-        neuron_12.addConnection(new NeuralInternalConnection(neuron_22, 1));
+        neuron_11.addConnection(new InternalArc(neuron_22, 0));
+        neuron_12.addConnection(new InternalArc(neuron_22, 1));
 
-        neuron_11.addConnection(new NeuralInternalConnection(neuron_23, 0));
-        neuron_12.addConnection(new NeuralInternalConnection(neuron_23, 1));
+        neuron_11.addConnection(new InternalArc(neuron_23, 0));
+        neuron_12.addConnection(new InternalArc(neuron_23, 1));
 
-        neuron_11.addConnection(new NeuralInternalConnection(neuron_24, 0));
-        neuron_12.addConnection(new NeuralInternalConnection(neuron_24, 1));
+        neuron_11.addConnection(new InternalArc(neuron_24, 0));
+        neuron_12.addConnection(new InternalArc(neuron_24, 1));
 
-        neuron_21.addConnection(new NeuralOutputConnection(network, 0));
-        neuron_22.addConnection(new NeuralOutputConnection(network, 1));
-        neuron_23.addConnection(new NeuralOutputConnection(network, 2));
-        neuron_24.addConnection(new NeuralOutputConnection(network, 3));
+        neuron_21.addConnection(new OutputArc(network, 0));
+        neuron_22.addConnection(new OutputArc(network, 1));
+        neuron_23.addConnection(new OutputArc(network, 2));
+        neuron_24.addConnection(new OutputArc(network, 3));
 
 
         NeuralLayer layer_1 = new NeuralLayer(neuron_11, neuron_12);

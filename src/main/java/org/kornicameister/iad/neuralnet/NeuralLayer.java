@@ -1,5 +1,6 @@
 package org.kornicameister.iad.neuralnet;
 
+import org.kornicameister.iad.neuralnet.core.NeuralLearner;
 import org.kornicameister.iad.neuralnet.core.NeuralProcessable;
 import org.kornicameister.iad.neuralnet.impl._NeuralLayer;
 
@@ -13,11 +14,24 @@ import java.util.Arrays;
  * @author kornicameister
  * @since 0.0.1
  */
-public class NeuralLayer extends _NeuralLayer implements NeuralProcessable {
+public class NeuralLayer
+        extends _NeuralLayer
+        implements NeuralProcessable, NeuralLearner {
+
     public NeuralLayer() {
+        this(false);
+    }
+
+    public NeuralLayer(final boolean topLayer) {
+        super(topLayer);
     }
 
     public NeuralLayer(Neuron... neurons) {
+        this(false, neurons);
+    }
+
+    public NeuralLayer(final Boolean topLayer, Neuron... neurons) {
+        this(topLayer);
         this.neurons.addAll(Arrays.asList(neurons));
     }
 
@@ -40,6 +54,16 @@ public class NeuralLayer extends _NeuralLayer implements NeuralProcessable {
         for (Neuron neuron : this.neurons) {
             neuron.initByRandom(lower, higher);
         }
+    }
+
+    @Override
+    public Double computeError() {
+        return null;
+    }
+
+    @Override
+    public void adjustWeights(Double error) {
+
     }
 
     @Override

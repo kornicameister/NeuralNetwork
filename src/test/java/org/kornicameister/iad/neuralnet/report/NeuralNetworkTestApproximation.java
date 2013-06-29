@@ -8,8 +8,8 @@ import org.kornicameister.iad.neuralnet.Neuron;
 import org.kornicameister.iad.neuralnet.RandomFunny;
 import org.kornicameister.iad.neuralnet.function.LinearFunction;
 import org.kornicameister.iad.neuralnet.function.SigmoidalUnipolarFunction;
-import org.kornicameister.iad.neuralnet.traverse.NeuralInternalConnection;
-import org.kornicameister.iad.neuralnet.traverse.NeuralOutputConnection;
+import org.kornicameister.iad.neuralnet.traverse.InternalArc;
+import org.kornicameister.iad.neuralnet.traverse.OutputArc;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -62,26 +62,29 @@ public class NeuralNetworkTestApproximation {
 
     @Test
     public void testApproximation() throws Exception {
-        final double learningFactor = 0.001;
-        final double momentumRate = 0.00001;
-        final double higher = 0.4;
+        final double learningFactor = 0.0000001;
+        final double momentumRate = learningFactor / 2.0;
+        final double higher = 0.9;
         final double lower = -higher;
-        final int inHidden = 1;
-        final int startInHidden = 1;
-        final int epochs = 5000;
+        final int inHidden = 12;
+        final int startInHidden = 12;
+        final int epochs = (int) Math.pow(10, 4);
+        final double aConstant = 0.7;
+        final double biasWeight = 1.0;
+        final double beta = 0.1;
 
         for (int i = startInHidden; i <= inHidden; i++) {
             System.out.println(String.format("Neurons in hidden layers, count=%d", i));
 
             Neuron outNeuron = new Neuron(
                     true,
-                    new LinearFunction(0.7),
+                    new LinearFunction(aConstant),
                     this.getWeightByHiddenLayersSize(i, lower, higher)
             );
 
             outNeuron.setLearningFactor(learningFactor);
             outNeuron.setMomentumRate(momentumRate);
-            outNeuron.setBiasWeight(this.getRandomDouble(lower, higher));
+            outNeuron.setBiasWeight(biasWeight);
 
             NeuralLayer neuralLayer = new NeuralLayer();
             NeuralNetwork network = new NeuralNetwork(1);
@@ -89,19 +92,18 @@ public class NeuralNetworkTestApproximation {
             for (int n = 0; n < i; n++) {
                 Neuron hidden = new Neuron(
                         true,
-                        new SigmoidalUnipolarFunction(this.getRandomDouble(0.1, 1.0)),
+                        new SigmoidalUnipolarFunction(beta),
                         this.getWeightByHiddenLayersSize(1, lower, higher)
                 );
                 hidden.setLearningFactor(learningFactor);
                 hidden.setMomentumRate(momentumRate);
-                hidden.setBiasWeight(this.getRandomDouble(lower, higher));
+                hidden.setBiasWeight(biasWeight);
 
-                for (int k = 0; k <= n; k++) {
-                    hidden.addConnection(new NeuralInternalConnection(outNeuron, k));
-                }
+                hidden.addConnection(new InternalArc(outNeuron, n));
+
                 neuralLayer.addNeuron(hidden);
             }
-            outNeuron.addConnection(new NeuralOutputConnection(network, 0));
+            outNeuron.addConnection(new OutputArc(network, 0));
             network.pushLayer(new NeuralLayer(outNeuron));
             network.pushLayer(neuralLayer);
 

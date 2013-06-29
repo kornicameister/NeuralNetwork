@@ -9,8 +9,8 @@ package org.kornicameister.iad.neuralnet.function;
  * @since 0.0.1
  */
 public class LinearFunction extends Function {
-    private Double aConstant;
-    private Double bConstant;
+    protected final Double aConstant;
+    protected final Double bConstant;
 
     public LinearFunction(Double aConstant) {
         this(aConstant, 0.0);
@@ -21,20 +21,12 @@ public class LinearFunction extends Function {
         this.bConstant = bConstant;
     }
 
-    public Double getaConstant() {
+    public Double getAConstant() {
         return aConstant;
     }
 
-    public void setaConstant(Double aConstant) {
-        this.aConstant = aConstant;
-    }
-
-    public Double getbConstant() {
+    public Double getBConstant() {
         return bConstant;
-    }
-
-    public void setbConstant(Double bConstant) {
-        this.bConstant = bConstant;
     }
 
     @Override

@@ -3,8 +3,8 @@ package org.kornicameister.iad.neuralnet;
 import org.junit.Test;
 import org.kornicameister.iad.neuralnet.function.LinearFunction;
 import org.kornicameister.iad.neuralnet.function.SigmoidalUnipolarFunction;
-import org.kornicameister.iad.neuralnet.traverse.NeuralInternalConnection;
-import org.kornicameister.iad.neuralnet.traverse.NeuralOutputConnection;
+import org.kornicameister.iad.neuralnet.traverse.InternalArc;
+import org.kornicameister.iad.neuralnet.traverse.OutputArc;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -26,7 +26,7 @@ public class NeuralNetworkTest {
                 false,
                 new LinearFunction(1.0, 2.0),
                 new Double[]{1.0, 2.0, 3.0},
-                new NeuralOutputConnection(network, 0)
+                new OutputArc(network, 0)
         ));
 
         network.addLayer(layer);
@@ -48,10 +48,10 @@ public class NeuralNetworkTest {
         Neuron neuron4 = new Neuron(false, new LinearFunction(0.001, 2.0));
         neuron4.setWeights(0.5);
 
-        neuron4.addConnection(new NeuralOutputConnection(network, 0));
-        neuron3.addConnection(new NeuralInternalConnection(neuron4, 0));
-        neuron2.addConnection(new NeuralInternalConnection(neuron3, 0));
-        neuron1.addConnection(new NeuralInternalConnection(neuron2, 0));
+        neuron4.addConnection(new OutputArc(network, 0));
+        neuron3.addConnection(new InternalArc(neuron4, 0));
+        neuron2.addConnection(new InternalArc(neuron3, 0));
+        neuron1.addConnection(new InternalArc(neuron2, 0));
 
         network.pushLayer(new NeuralLayer(neuron4));
         network.pushLayer(new NeuralLayer(neuron3));
@@ -75,10 +75,10 @@ public class NeuralNetworkTest {
         Neuron neuron4 = new Neuron(false, new LinearFunction(0.001, 2.0));
         neuron4.setWeights(0.5);
 
-        neuron4.addConnection(new NeuralOutputConnection(network, 0));
-        neuron3.addConnection(new NeuralInternalConnection(neuron4, 0));
-        neuron2.addConnection(new NeuralInternalConnection(neuron3, 0));
-        neuron1.addConnection(new NeuralInternalConnection(neuron3, 1));
+        neuron4.addConnection(new OutputArc(network, 0));
+        neuron3.addConnection(new InternalArc(neuron4, 0));
+        neuron2.addConnection(new InternalArc(neuron3, 0));
+        neuron1.addConnection(new InternalArc(neuron3, 1));
 
         network.pushLayer(new NeuralLayer(neuron4));
         network.pushLayer(new NeuralLayer(neuron3));
@@ -148,14 +148,14 @@ public class NeuralNetworkTest {
                 } else if (l != layersCount - 1) {
                     neuron.setSize(layers[l - 1].getSize());
                     for (int nn = 0; nn < neuron.getSize(); nn++) {
-                        layers[l - 1].getNeuron(nn).addConnection(new NeuralInternalConnection(neuron, nn));
+                        layers[l - 1].getNeuron(nn).addConnection(new InternalArc(neuron, nn));
                     }
                 } else {
                     neuron.setSize(layers[l - 1].getSize());
                     for (int nn = 0; nn < neuron.getSize(); nn++) {
-                        layers[l - 1].getNeuron(nn).addConnection(new NeuralInternalConnection(neuron, nn));
+                        layers[l - 1].getNeuron(nn).addConnection(new InternalArc(neuron, nn));
                     }
-                    neuron.addConnection(new NeuralOutputConnection(network, outputTapped++));
+                    neuron.addConnection(new OutputArc(network, outputTapped++));
                 }
                 neurons[n] = neuron;
             }
@@ -229,18 +229,18 @@ public class NeuralNetworkTest {
         Neuron neuron4 = new Neuron(biasEnabled, function);
         neuron4.setSize(1);
 
-        neuron4.addConnection(new NeuralOutputConnection(network, 0));
-        neuron3.addConnection(new NeuralInternalConnection(neuron4, 0));
+        neuron4.addConnection(new OutputArc(network, 0));
+        neuron3.addConnection(new InternalArc(neuron4, 0));
 
-        neuron2.addConnection(new NeuralInternalConnection(neuron3, 0));
-        neuron21.addConnection(new NeuralInternalConnection(neuron3, 0));
+        neuron2.addConnection(new InternalArc(neuron3, 0));
+        neuron21.addConnection(new InternalArc(neuron3, 0));
 
-        neuron1.addConnection(new NeuralInternalConnection(neuron2, 0));
-        neuron11.addConnection(new NeuralInternalConnection(neuron2, 1));
-        neuron12.addConnection(new NeuralInternalConnection(neuron2, 2));
-        neuron1.addConnection(new NeuralInternalConnection(neuron21, 0));
-        neuron11.addConnection(new NeuralInternalConnection(neuron21, 1));
-        neuron12.addConnection(new NeuralInternalConnection(neuron21, 2));
+        neuron1.addConnection(new InternalArc(neuron2, 0));
+        neuron11.addConnection(new InternalArc(neuron2, 1));
+        neuron12.addConnection(new InternalArc(neuron2, 2));
+        neuron1.addConnection(new InternalArc(neuron21, 0));
+        neuron11.addConnection(new InternalArc(neuron21, 1));
+        neuron12.addConnection(new InternalArc(neuron21, 2));
 
         network.pushLayer(new NeuralLayer(neuron4));
         network.pushLayer(new NeuralLayer(neuron3));
@@ -293,14 +293,14 @@ public class NeuralNetworkTest {
                 } else if (l != layersCount - 1) {
                     neuron.setSize(layers[l - 1].getSize());
                     for (int nn = 0; nn < neuron.getSize(); nn++) {
-                        layers[l - 1].getNeuron(nn).addConnection(new NeuralInternalConnection(neuron, nn));
+                        layers[l - 1].getNeuron(nn).addConnection(new InternalArc(neuron, nn));
                     }
                 } else {
                     neuron.setSize(layers[l - 1].getSize());
                     for (int nn = 0; nn < neuron.getSize(); nn++) {
-                        layers[l - 1].getNeuron(nn).addConnection(new NeuralInternalConnection(neuron, nn));
+                        layers[l - 1].getNeuron(nn).addConnection(new InternalArc(neuron, nn));
                     }
-                    neuron.addConnection(new NeuralOutputConnection(network, outputTapped++));
+                    neuron.addConnection(new OutputArc(network, outputTapped++));
                 }
                 neurons[n] = neuron;
             }

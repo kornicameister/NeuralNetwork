@@ -10,7 +10,12 @@ import java.util.List;
  * @since 0.0.1
  */
 public class _NeuralLayer {
-    protected List<Neuron> neurons = new LinkedList<>();
+    protected final List<Neuron> neurons = new LinkedList<>();
+    protected final Boolean topLayer;
+
+    public _NeuralLayer(Boolean topLayer) {
+        this.topLayer = topLayer;
+    }
 
     public boolean addNeuron(Neuron neuron) {
         return this.neurons.add(neuron);
