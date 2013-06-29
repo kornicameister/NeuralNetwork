@@ -8,3 +8,10 @@
 # other
 .idea/
 *.iml
+
+errors/**
+report/**
+shit/**
+task_26_03/**
+target/**
+*.txt
