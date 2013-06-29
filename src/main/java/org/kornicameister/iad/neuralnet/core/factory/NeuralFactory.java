@@ -1,12 +1,12 @@
-package org.kornicameister.iad.neuralnet.factory;
+package org.kornicameister.iad.neuralnet.core.factory;
 
-import org.kornicameister.iad.neuralnet.Neuron;
-import org.kornicameister.iad.neuralnet.core.NeuronConstants;
+import org.kornicameister.iad.neuralnet.core.impl.Neuron;
+import org.kornicameister.iad.neuralnet.data.NeuronBiasData;
+import org.kornicameister.iad.neuralnet.data.NeuronConstants;
+import org.kornicameister.iad.neuralnet.data.NeuronData;
 import org.kornicameister.iad.neuralnet.function.Function;
 import org.kornicameister.iad.neuralnet.util.ArraysUtils;
 import org.kornicameister.iad.neuralnet.util.RandomUtil;
-import org.kornicameister.iad.neuralnet.values.NeuronBiasData;
-import org.kornicameister.iad.neuralnet.values.NeuronData;
 
 public class NeuralFactory {
 
