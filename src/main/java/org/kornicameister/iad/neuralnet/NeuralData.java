@@ -12,7 +12,7 @@ public interface NeuralData {
 
     Double[] getSignals();
 
-    void setSignals(Double... signal);
+    void setSignal(Double... signal);
 
     Double[] getWeights();
 

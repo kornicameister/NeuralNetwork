@@ -1,9 +1,13 @@
 package org.kornicameister.iad.neuralnet.impl;
 
+
 import org.apache.log4j.Logger;
+import org.kornicameister.iad.neuralnet.NeuralProcessable;
 import org.kornicameister.iad.neuralnet.backend._NeuralNetwork;
-import org.kornicameister.iad.neuralnet.impl.layers.InputNeuralLayer;
-import org.kornicameister.iad.neuralnet.impl.layers.OutputNeuralLayer;
+import org.kornicameister.iad.neuralnet.util.ArraysUtils;
+
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author kornicameister
@@ -12,43 +16,80 @@ import org.kornicameister.iad.neuralnet.impl.layers.OutputNeuralLayer;
  */
 public class NeuralNetwork extends _NeuralNetwork {
     private static final Logger LOGGER = Logger.getLogger(NeuralNetwork.class);
-    private Double[] expectedResult;
-    private Double[] result;
+    private Double[] expectedOutput;
+    private Double[] output;
 
-    public NeuralNetwork(final InputNeuralLayer inputNeuralLayer,
-                         final OutputNeuralLayer outputNeuralLayer,
-                         final NeuralLayer... hiddenLayers) {
-        super(inputNeuralLayer, outputNeuralLayer, hiddenLayers);
+    public NeuralNetwork(final Integer size, final NeuralLayer... layers) {
+        super(layers);
+        this.expectedOutput = ArraysUtils.newDoubleArray(size);
+        this.output = ArraysUtils.newDoubleArray(size);
     }
 
     public Double computeError() {
         Double error = 0d;
-        for (int i = 0; i < result.length; i++) {
-            error += Math.pow(this.result[i] - this.expectedResult[i], 2);
+        for (int i = 0; i < output.length; i++) {
+            error += Math.pow(this.output[i] - this.expectedOutput[i], 2);
         }
         return error / 2.0;
     }
 
-    public void feedBackward() {
-        this.feedBackward(0d);
+    public NeuralProcessable feedBackward() {
+        NeuralLayer layer = this.getOutputLayer();
+        do {
+            layer.setDelta(this.expectedOutput);
+            layer = layer.getLowerLayer();
+        } while (layer != null);
+        for (NeuralLayer neuralLayer : this.layerList) {
+            neuralLayer.update();
+        }
+        return this;
+    }
+
+    private NeuralLayer getOutputLayer() {
+        return this.layerList.get(this.layerList.size() - 1);
     }
 
     @Override
-    public void feedBackward(final double delta) {
-        //top layer error
-
+    public NeuralProcessable feedForward() {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("FF >>> Computing an output of the network");
+        }
+        final Long startTime = System.nanoTime();
+        for (final NeuralLayer neuralLayer : this.layerList) {
+            neuralLayer.feedForward();
+        }
+        final NeuralLayer topLayer = this.getOutputLayer();
+        final Double[] topOutput = topLayer.getOutput();
+        System.arraycopy(topOutput, 0, this.output, 0, topOutput.length);
+        final Long endTime = System.nanoTime() - startTime;
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.info(String.format("FF >>> Computing an output of the network is finished\n\ttime=%d\n\toutput=%s",
+                    TimeUnit.NANOSECONDS.toMillis(endTime),
+                    Arrays.toString(this.output)));
+        }
+        return this;
     }
 
     @Override
-    public void feedForward(final Double[] signal) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Out >>> Computing an output of the network");
+    public NeuralProcessable setSignal(Double... signal) {
+        final NeuralLayer layer = this.layerList.get(0);
+        if (layer.isInputLayer()) {
+            layer.setSignal(signal);
         }
-        for (NeuralLayer neuralLayer : this.hiddenLayers) {
+        return this;
+    }
 
-        }
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Out >>> Computing an output of the network is finished");
-        }
+    @Override
+    public Double[] getOutput() {
+        return this.output;
+    }
+
+    @Override
+    public Integer getSize() {
+        return this.output.length;
+    }
+
+    public void setExpectedOutput(final Double... expectedOutput) {
+        this.expectedOutput = expectedOutput.clone();
     }
 }

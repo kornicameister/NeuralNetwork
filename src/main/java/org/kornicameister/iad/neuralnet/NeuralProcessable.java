@@ -10,19 +10,33 @@ package org.kornicameister.iad.neuralnet;
  * @since 0.0.1
  */
 public interface NeuralProcessable {
-
-    /**
-     * This method implementation is designed to support teaching feedForward. For
-     * example method of backwards propagation can be used.
-     *
-     * @param delta value of an error, that will be used in neurons teaching process
-     */
-    void feedBackward(final double delta);
-
     /**
      * Use this method to feedForward input of neural network.
-     *
-     * @param signal signal to be processed
      */
-    void feedForward(final Double[] signal);
+    NeuralProcessable feedForward();
+
+    NeuralProcessable setSignal(Double... signal);
+
+    /**
+     * Retrieve an output from the processable instance.
+     * What this method returns differs for each type.
+     * For example. Whether the {@link org.kornicameister.iad.neuralnet.impl.Neuron} returns
+     * an array which has always 1 element, the {@link org.kornicameister.iad.neuralnet.impl.NeuralLayer}
+     * will always return an array with as many elements as it's
+     * {@link org.kornicameister.iad.neuralnet.impl.NeuralNetwork#getSize()}
+     *
+     * @return output as an array
+     */
+    Double[] getOutput();
+
+    /**
+     * Returns size of the processable instance. The behaviour is different for each processable type.
+     * For example this method will return amount of weights/signal in the
+     * {@link org.kornicameister.iad.neuralnet.impl.Neuron},
+     * but for {@link org.kornicameister.iad.neuralnet.impl.NeuralLayer}
+     * it will return the amount of layers the network has.
+     *
+     * @return size of processable type
+     */
+    Integer getSize();
 }

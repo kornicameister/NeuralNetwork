@@ -1,5 +1,6 @@
 package org.kornicameister.iad.neuralnet.backend;
 
+import org.kornicameister.iad.neuralnet.NeuralBackPropagation;
 import org.kornicameister.iad.neuralnet.NeuralInformation;
 import org.kornicameister.iad.neuralnet.NeuralProcessable;
 import org.kornicameister.iad.neuralnet.data.NeuronConstants;
@@ -13,7 +14,7 @@ import org.kornicameister.iad.neuralnet.impl.Neuron;
  * @since 0.0.1
  */
 abstract public class _Neuron
-        implements NeuralProcessable, NeuralInformation {
+        implements NeuralProcessable, NeuralInformation, NeuralBackPropagation {
     private static Integer NEURON_ID = 0;
     protected final Integer neuronId;
     protected final NeuronConstants constants;
@@ -50,42 +51,53 @@ abstract public class _Neuron
     }
 
     public Double[] getOldWeights() {
-        return values.getOldWeights();
+        return this.values.getOldWeights();
     }
 
     public void setOldWeights(final Double[] oldWeights) {
-        values.setOldWeights(oldWeights);
+        this.values.setOldWeights(oldWeights);
     }
 
     public Double[] getSignals() {
-        return values.getSignals();
+        return this.values.getSignals();
     }
 
-    public void setSignals(final Double[] signals) {
-        values.setSignals(signals);
+    @Override
+    public NeuralProcessable setSignal(final Double... signals) {
+        this.values.setSignal(signals);
+        return this;
+    }
+
+    @Override
+    public Integer getSize() {
+        return this.values.getSize();
     }
 
     public Double[] getWeights() {
-        return values.getWeights();
+        return this.values.getWeights();
     }
 
     public void setWeights(final Double[] weights) {
-        values.setWeights(weights);
-    }
-
-    public int getSize() {
-        return values.getSize();
+        this.values.setWeights(weights);
     }
 
     public Neuron getNeuron() {
-        return values.getNeuron();
+        return this.values.getNeuron();
     }
 
     public Double getSignalAt(final int index) {
-        return values.getSignalAt(index);
+        return this.values.getSignalAt(index);
     }
 
     public Double getWeightAt(final int index) {
-        return values.getWeightAt(index);
+        return this.values.getWeightAt(index);
+    }
+
+    public Double getOldWeightAt(final int index) {
+        return this.values.getOldWeightAt(index);
+    }
+
+    public void setWeightAt(final Double val, final int index) {
+        this.values.setWeightAt(val, index);
     }
 }

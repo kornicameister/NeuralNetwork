@@ -1,6 +1,7 @@
 package org.kornicameister.iad.neuralnet.backend;
 
 import org.apache.log4j.Logger;
+import org.kornicameister.iad.neuralnet.NeuralBackPropagation;
 import org.kornicameister.iad.neuralnet.NeuralProcessable;
 import org.kornicameister.iad.neuralnet.impl.Neuron;
 
@@ -11,45 +12,29 @@ import java.util.List;
  * @author kornicameister
  * @since 0.0.1
  */
-abstract public class _NeuralLayer implements NeuralProcessable {
+abstract public class _NeuralLayer
+        implements NeuralProcessable, NeuralBackPropagation {
     private final static Logger LOGGER = Logger.getLogger(_NeuralLayer.class);
+    private static Integer LAYER_ID = 0;
+    protected final Integer layerId;
     protected final List<Neuron> neurons = new LinkedList<>();
     protected _NeuralLayer upperLayer;
     protected _NeuralLayer lowerLayer;
 
-    protected _NeuralLayer() {
-        super();
-    }
-
     protected _NeuralLayer(final _NeuralLayer upperLayer, final _NeuralLayer lowerLayer, final Neuron... neurons) {
+        this(neurons);
+        this.upperLayer = upperLayer;
+        this.lowerLayer = lowerLayer;
+    }
+
+    protected _NeuralLayer(final Neuron... neurons) {
         super();
-        this.upperLayer = upperLayer;
-        this.lowerLayer = lowerLayer;
+        this.layerId = LAYER_ID++;
         this.setNeurons(neurons);
-    }
-
-    public _NeuralLayer setUpperLayer(final _NeuralLayer upperLayer) {
-        this.upperLayer = upperLayer;
-        upperLayer.setLowerLayer(this);
-        return this;
-    }
-
-    public _NeuralLayer setLowerLayer(final _NeuralLayer lowerLayer) {
-        this.lowerLayer = lowerLayer;
-        lowerLayer.setUpperLayer(this);
-        return this;
     }
 
     public Neuron getNeuron(final int i) {
         return this.neurons.get(i);
-    }
-
-    public Neuron removeNeuron(final int i) {
-        return this.neurons.remove(i);
-    }
-
-    public boolean removeNeuron(final Neuron neuron) {
-        return this.neurons.remove(neuron);
     }
 
     public List<Neuron> getNeurons() {
@@ -69,20 +54,48 @@ abstract public class _NeuralLayer implements NeuralProcessable {
         return this.neurons.add(neuron);
     }
 
-    public void clearNeurons() {
-        this.neurons.clear();
+    @Override
+    public Integer getSize() {
+        return this.neurons.size();
     }
 
-    public int getSize() {
-        return this.neurons.size();
+    public _NeuralLayer getUpperLayer() {
+        return upperLayer;
+    }
+
+    public _NeuralLayer setUpperLayer(final _NeuralLayer upperLayer) {
+        if (this.upperLayer == null) {
+            this.upperLayer = upperLayer;
+            if (upperLayer.getLowerLayer() == null) {
+                upperLayer.setLowerLayer(this);
+            }
+        }
+        return this;
+    }
+
+    public _NeuralLayer getLowerLayer() {
+        return lowerLayer;
+    }
+
+    public _NeuralLayer setLowerLayer(final _NeuralLayer lowerLayer) {
+        if (this.lowerLayer == null) {
+            this.lowerLayer = lowerLayer;
+            if (lowerLayer.getUpperLayer() == null) {
+                lowerLayer.setUpperLayer(this);
+            }
+        }
+        return this;
+    }
+
+    public Integer getLayerId() {
+        return layerId;
     }
 
     @Override
     public String toString() {
         return "_NeuralLayer{" +
-                "neurons=" + neurons +
-                ", upperLayer=" + upperLayer +
-                ", lowerLayer=" + lowerLayer +
+                "layerId=" + layerId +
+                ", neurons=" + neurons +
                 ", isInputLayer=" + this.isInputLayer() +
                 ", isHiddenLayer=" + this.isHiddenLayer() +
                 ", isOutputLayer=" + this.isOutputLayer() +
@@ -90,7 +103,7 @@ abstract public class _NeuralLayer implements NeuralProcessable {
     }
 
     public Boolean isHiddenLayer() {
-        return !(this.isInputLayer() && this.isOutputLayer());
+        return this.upperLayer != null && this.lowerLayer != null;
     }
 
     public Boolean isOutputLayer() {
@@ -99,5 +112,15 @@ abstract public class _NeuralLayer implements NeuralProcessable {
 
     public Boolean isInputLayer() {
         return this.lowerLayer == null && this.upperLayer != null;
+    }
+
+    public final String getType() {
+        if (this.isHiddenLayer()) {
+            return "hidden";
+        }
+        if (this.isInputLayer()) {
+            return "input";
+        }
+        return "output";
     }
 }

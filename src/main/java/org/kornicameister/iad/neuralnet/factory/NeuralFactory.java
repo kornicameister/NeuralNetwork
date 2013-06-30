@@ -6,24 +6,24 @@ import org.kornicameister.iad.neuralnet.data.NeuronData;
 import org.kornicameister.iad.neuralnet.function.Function;
 import org.kornicameister.iad.neuralnet.impl.NeuralLayer;
 import org.kornicameister.iad.neuralnet.impl.Neuron;
-import org.kornicameister.iad.neuralnet.impl.layers.InputNeuralLayer;
-import org.kornicameister.iad.neuralnet.impl.layers.OutputNeuralLayer;
-
-import java.util.List;
 
 public class NeuralFactory {
 
     public static class Layers {
-        public static NeuralLayer newOutputLayer(final NeuralLayer lowerLayer, final List<Neuron> neurons) {
-            return new OutputNeuralLayer(lowerLayer, neurons.toArray(new Neuron[neurons.size()]));
+        public static NeuralLayer newOutputLayer(final NeuralLayer lowerLayer, final Neuron... neurons) {
+            final NeuralLayer layer = new NeuralLayer(neurons);
+            layer.setLowerLayer(lowerLayer);
+            return layer;
         }
 
-        public static NeuralLayer newHiddenLayer(final NeuralLayer upperLayer, final NeuralLayer lowerLayer, final List<Neuron> neurons) {
-            return new NeuralLayer(upperLayer, lowerLayer, neurons.toArray(new Neuron[neurons.size()]));
+        public static NeuralLayer newHiddenLayer(final NeuralLayer upperLayer, final NeuralLayer lowerLayer, final Neuron... neurons) {
+            return new NeuralLayer(upperLayer, lowerLayer, neurons);
         }
 
-        public static NeuralLayer newInputLayer(final NeuralLayer higherLayer, final List<Neuron> neurons) {
-            return new InputNeuralLayer(higherLayer, neurons.toArray(new Neuron[neurons.size()]));
+        public static NeuralLayer newInputLayer(final NeuralLayer higherLayer, final Neuron... neurons) {
+            final NeuralLayer layer = new NeuralLayer(neurons);
+            layer.setUpperLayer(higherLayer);
+            return layer;
         }
     }
 

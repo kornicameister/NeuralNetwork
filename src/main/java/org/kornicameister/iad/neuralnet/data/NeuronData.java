@@ -44,7 +44,7 @@ public class NeuronData implements NeuralData {
     }
 
     @Override
-    public void setSignals(Double[] signals) {
+    public void setSignal(Double[] signals) {
         this.signals = signals.clone();
     }
 
@@ -59,7 +59,7 @@ public class NeuronData implements NeuralData {
     }
 
     @Override
-    public final int getSize() {
+    public int getSize() {
         return this.weights.length;
     }
 
@@ -89,5 +89,15 @@ public class NeuronData implements NeuralData {
                 ", weights=" + Arrays.toString(weights) +
                 ", signals=" + Arrays.toString(signals) +
                 "} " + super.toString();
+    }
+
+    public Double getOldWeightAt(final int index) {
+        Preconditions.checkArgument(index >= 0 && index <= (this.getSize() - 1), "Invalid old weight index");
+        return this.oldWeights[index];
+    }
+
+    public void setWeightAt(final Double val, final int index) {
+        Preconditions.checkArgument(index >= 0 && index <= (this.getSize() - 1), "Invalid weight index");
+        this.weights[index] = val;
     }
 }

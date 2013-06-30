@@ -25,7 +25,6 @@ public class ArraysUtils {
     }
 
     public static Double[] newRandomDoubleArray(final int size, final double lower, final double higher) {
-        final Random seed = new Random(System.nanoTime());
         Double[] array = ArraysUtils.newDoubleArray(size);
         for (int i = 0; i < size; i++) {
             array[i] = RandomUtil.randomDouble(lower, higher);
