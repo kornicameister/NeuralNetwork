@@ -36,7 +36,6 @@ public class ApproximationTask extends DefaultTask {
     protected void doTask() {
         int training = 0;
         while ((training++) < epochs) {
-            LOGGER.info(String.format("Epoch %d >>> computing...", training - 1));
             final Long startTime = System.nanoTime();
             Double error = 0.0;
             for (final Double[] data : this.trainDataList) {

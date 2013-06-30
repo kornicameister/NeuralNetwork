@@ -14,6 +14,6 @@ public class ApproximationTaskTest {
 
     @Test
     public void testCompute() throws Exception {
-        new ApproximationTask().compute("D:/Dropbox/STUDIA/INFORMATYKA/SEMESTR6/IAD/laboratoria/NeuralNetwork/src/main/resources/approximation.properties");
+        new ApproximationTask().compute("D:/Dropbox/STUDIA/INFORMATYKA/SEMESTR6/IAD/laboratoria/NeuralNetwork/src/main/resources/task.properties");
     }
 }
