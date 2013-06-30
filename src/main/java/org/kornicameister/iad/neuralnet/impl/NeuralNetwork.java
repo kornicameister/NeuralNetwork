@@ -33,10 +33,10 @@ public class NeuralNetwork extends _NeuralNetwork {
         return error / 2.0;
     }
 
-    public NeuralProcessable feedBackward() {
+    public NeuralProcessable teach() {
         NeuralLayer layer = this.getOutputLayer();
         do {
-            layer.setDelta(this.expectedOutput);
+            layer.teach(this.expectedOutput);
             layer = layer.getLowerLayer();
         } while (layer != null);
         for (NeuralLayer neuralLayer : this.layerList) {
@@ -50,13 +50,13 @@ public class NeuralNetwork extends _NeuralNetwork {
     }
 
     @Override
-    public NeuralProcessable feedForward() {
+    public NeuralProcessable process() {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("FF >>> Computing an output of the network");
         }
         final Long startTime = System.nanoTime();
         for (final NeuralLayer neuralLayer : this.layerList) {
-            neuralLayer.feedForward();
+            neuralLayer.process();
         }
         final NeuralLayer topLayer = this.getOutputLayer();
         final Double[] topOutput = topLayer.getOutput();
@@ -91,5 +91,13 @@ public class NeuralNetwork extends _NeuralNetwork {
 
     public void setExpectedOutput(final Double... expectedOutput) {
         this.expectedOutput = expectedOutput.clone();
+    }
+
+    @Override
+    public String toString() {
+        return "NeuralNetwork{" +
+                "expectedOutput=" + Arrays.toString(expectedOutput) +
+                ", output=" + Arrays.toString(output) +
+                "} " + super.toString();
     }
 }

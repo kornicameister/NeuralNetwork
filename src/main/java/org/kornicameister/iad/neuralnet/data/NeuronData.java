@@ -13,6 +13,7 @@ import java.util.Arrays;
  * @since 0.0.1
  */
 public class NeuronData implements NeuralData {
+    private final Integer size;
     private Neuron neuron;
     private Double[] oldWeights;
     private Double[] weights;
@@ -23,9 +24,11 @@ public class NeuronData implements NeuralData {
     }
 
     public NeuronData(Double[] signals, Double[] weights) {
+        Preconditions.checkArgument(signals.length == weights.length, "Invalid data for neuron >>> signals and weights not equal in dimension");
         this.signals = signals.clone();
         this.weights = weights.clone();
         this.oldWeights = weights.clone();
+        this.size = weights.length;
     }
 
     @Override
@@ -35,6 +38,7 @@ public class NeuronData implements NeuralData {
 
     @Override
     public void setOldWeights(Double[] oldWeights) {
+        Preconditions.checkArgument(oldWeights.length == this.size, "Array mismatched sizes");
         this.oldWeights = oldWeights.clone();
     }
 
@@ -45,6 +49,7 @@ public class NeuronData implements NeuralData {
 
     @Override
     public void setSignal(Double[] signals) {
+        Preconditions.checkArgument(signals.length == this.size, "Array mismatched sizes");
         this.signals = signals.clone();
     }
 
@@ -55,12 +60,13 @@ public class NeuronData implements NeuralData {
 
     @Override
     public void setWeights(Double[] weights) {
+        Preconditions.checkArgument(weights.length == this.size, "Array mismatched sizes");
         this.weights = weights.clone();
     }
 
     @Override
     public int getSize() {
-        return this.weights.length;
+        return this.size;
     }
 
     public Neuron getNeuron() {
@@ -84,7 +90,8 @@ public class NeuronData implements NeuralData {
     @Override
     public String toString() {
         return "NeuronData{" +
-                "neuron=" + neuron +
+                "size=" + size +
+                ", neuron=" + neuron.getNeuronId() +
                 ", oldWeights=" + Arrays.toString(oldWeights) +
                 ", weights=" + Arrays.toString(weights) +
                 ", signals=" + Arrays.toString(signals) +

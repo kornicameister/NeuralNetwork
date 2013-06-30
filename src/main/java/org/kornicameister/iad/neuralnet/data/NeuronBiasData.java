@@ -82,10 +82,6 @@ public class NeuronBiasData extends NeuronData {
         return super.getWeightAt(index - 1);
     }
 
-    public Double getBiasWeight() {
-        return biasWeight;
-    }
-
     @Override
     public String toString() {
         return "NeuronBiasData{" +
@@ -102,6 +98,10 @@ public class NeuronBiasData extends NeuronData {
         return super.getOldWeightAt(index - 1);
     }
 
+    public Double getOldBiasWeight() {
+        return oldBiasWeight;
+    }
+
     @Override
     public void setWeightAt(final Double val, final int index) {
         if (index == 0) {
@@ -111,7 +111,7 @@ public class NeuronBiasData extends NeuronData {
         super.setWeightAt(val, index - 1);
     }
 
-    public Double getOldBiasWeight() {
-        return oldBiasWeight;
+    public Double getBiasWeight() {
+        return biasWeight;
     }
 }

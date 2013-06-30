@@ -25,7 +25,7 @@ public class Neuron extends _Neuron {
     }
 
     @Override
-    public NeuralProcessable feedForward() {
+    public NeuralProcessable process() {
         this.rawOutput = 0d;
         for (int i = 0; i < this.getSize(); i++) {
             this.rawOutput += this.getWeightAt(i) * this.getSignalAt(i);
@@ -53,8 +53,7 @@ public class Neuron extends _Neuron {
         for (int i = 0; i < this.getSize(); i++) {
             val = this.getWeightAt(i);
             oldVal = val;
-            val -= 2.0 * this.delta * this.getLearningConstant() * this.getSignalAt(i);
-            val -= this.getMomentum() * (this.getWeightAt(i) - this.getOldWeightAt(i));
+            val -= 2.0 * this.delta * this.getLearningConstant() * this.getSignalAt(i) + this.getMomentum() * (this.getWeightAt(i) - this.getOldWeightAt(i));
             this.setWeightAt(val, i);
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug(String.format("FB << Neuron %d updates\n\tweight=[%d, %.15f >> %.15f]", this.neuronId, i, oldVal, val));
@@ -65,7 +64,7 @@ public class Neuron extends _Neuron {
     }
 
     @Override
-    public NeuralBackPropagation setDelta(final Double... delta) {
+    public NeuralBackPropagation teach(final Double... delta) {
         Preconditions.checkArgument(delta.length == 1, DELTA_FOR_THE_NEURON_TOO_BIG);
         this.delta = delta[0];
         if (LOGGER.isDebugEnabled()) {

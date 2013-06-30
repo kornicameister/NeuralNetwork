@@ -38,15 +38,9 @@ abstract public class DefaultTask implements Task {
 
         try {
             this.load(propertiesPath);
-        } catch (IOException e) {
-            LOGGER.fatal("Can load properties", e);
-            return;
-        }
-
-        try {
             this.readData();
-        } catch (FileNotFoundException fnfe) {
-            LOGGER.fatal("Failed to read data", fnfe);
+        } catch (IOException e) {
+            LOGGER.fatal(String.format("Failed to initialize the task %s", this.getClass().getSimpleName()), e);
             return;
         }
 
@@ -56,11 +50,16 @@ abstract public class DefaultTask implements Task {
         try {
             this.saveResult();
         } catch (FileNotFoundException fnfe) {
-            LOGGER.fatal("Failed to save results", fnfe);
+            LOGGER.fatal(String.format("Failed to save the task's %s results", this.getClass().getSimpleName()), fnfe);
         }
     }
 
-    private void saveResult() throws FileNotFoundException {
+    protected void saveResult() throws FileNotFoundException {
+        this.saveErrorResultToFile();
+        this.saveDataResultToFile();
+    }
+
+    private void saveErrorResultToFile() throws FileNotFoundException {
         final PrintWriter errWriter = new PrintWriter(new File(String.format("%s/%s", this.dataDir, this.errPath)));
         int it = 0;
         for (Double err : this.errors) {
@@ -71,9 +70,9 @@ abstract public class DefaultTask implements Task {
         }
         errWriter.flush();
         errWriter.close();
+    }
 
-        //////////////////////
-
+    private void saveDataResultToFile() throws FileNotFoundException {
         final PrintWriter dataWriter = new PrintWriter(new File(String.format("%s/%s", this.dataDir, this.outPath)));
         for (Pair<Double, Double> result : this.result) {
             dataWriter.print(result.getKey());
@@ -91,6 +90,13 @@ abstract public class DefaultTask implements Task {
 
     protected abstract void readData() throws FileNotFoundException;
 
+    /**
+     * Reads properties from the given path. Properties contains information
+     * about task's constants, data files, train files and network structure
+     *
+     * @param propertiesPath path to properties file
+     * @throws IOException if file couldn't have been read
+     */
     protected void load(final String propertiesPath) throws IOException {
         this.properties = new Properties();
         this.properties.load(new BufferedReader(new FileReader(new File(propertiesPath))));
@@ -119,6 +125,12 @@ abstract public class DefaultTask implements Task {
         return neurons;
     }
 
+    /**
+     * By using reflection, this methods resolves functions to be used on each layer.
+     * Each objects is assigned to corresponding layer by its position in the array.
+     *
+     * @return array of {@link Function} objects.
+     */
     private Function[] readFunctionsInLayers() {
         final String[] functionsSplit = this.properties.getProperty("task.functions").split(",");
         final Function[] functions = new Function[functionsSplit.length];

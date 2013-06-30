@@ -8,5 +8,5 @@ package org.kornicameister.iad.neuralnet;
 public interface NeuralBackPropagation {
     NeuralBackPropagation update();
 
-    NeuralBackPropagation setDelta(Double... result);
+    NeuralBackPropagation teach(Double... result);
 }

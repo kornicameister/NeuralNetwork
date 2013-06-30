@@ -54,7 +54,7 @@ public class NeuralLayer extends _NeuralLayer {
     }
 
     @Override
-    public NeuralBackPropagation setDelta(final Double... result) {
+    public NeuralBackPropagation teach(final Double... result) {
         this.error = new Double[this.getSize()];
         for (int i = 0, thisLayerNeuronsSize = this.neurons.size(); i < thisLayerNeuronsSize; i++) {
             final Neuron neuron = this.neurons.get(i);
@@ -64,12 +64,16 @@ public class NeuralLayer extends _NeuralLayer {
 
             for (int j = 0, upperLayerNeuronsSize = this.upperLayer.getSize(); j < upperLayerNeuronsSize; j++) {
                 final Neuron upperNeuron = this.upperLayer.getNeuron(j);
-                err += upperNeuron.getDelta() * upperNeuron.getWeightAt(i);
+                if (upperNeuron.isBiasEnabled()) {
+                    err += upperNeuron.getDelta() * upperNeuron.getWeightAt(i + 1);
+                } else {
+                    err += upperNeuron.getDelta() * upperNeuron.getWeightAt(i);
+                }
             }
 
             err = err * function.derivativeCalculate(neuron.getRawOutput()[0]);
 
-            this.error[i] = ((Neuron) neuron.setDelta(err)).getDelta();
+            this.error[i] = ((Neuron) neuron.teach(err)).getDelta();
         }
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug(String.format("FB >>> \n\tresult=%s,\n\terror=%s",
@@ -80,10 +84,10 @@ public class NeuralLayer extends _NeuralLayer {
     }
 
     @Override
-    public NeuralProcessable feedForward() {
+    public NeuralProcessable process() {
         final List<Double> layerResult = new LinkedList<>();
         for (Neuron neuron : this.neurons) {
-            layerResult.add(neuron.feedForward().getOutput()[0]);
+            layerResult.add(neuron.process().getOutput()[0]);
         }
         final Double[] output = layerResult.toArray(new Double[layerResult.size()]);
         if (LOGGER.isDebugEnabled()) {
@@ -95,19 +99,6 @@ public class NeuralLayer extends _NeuralLayer {
         this.getUpperLayer().setSignal(output);
         this.output = output;
         return this;
-    }
-
-    @Override
-    public NeuralProcessable setSignal(final Double... signal) {
-        for (Neuron neuron : this.neurons) {
-            neuron.setSignal(signal);
-        }
-        return this;
-    }
-
-    @Override
-    public Double[] getOutput() {
-        return this.output;
     }
 
     public NeuralLayer getUpperLayer() {
@@ -123,5 +114,18 @@ public class NeuralLayer extends _NeuralLayer {
         return "NeuralLayer{" +
                 "output=" + Arrays.toString(output) +
                 "} " + super.toString();
+    }
+
+    @Override
+    public NeuralProcessable setSignal(final Double... signal) {
+        for (Neuron neuron : this.neurons) {
+            neuron.setSignal(signal);
+        }
+        return this;
+    }
+
+    @Override
+    public Double[] getOutput() {
+        return this.output;
     }
 }

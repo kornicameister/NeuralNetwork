@@ -11,9 +11,9 @@ package org.kornicameister.iad.neuralnet;
  */
 public interface NeuralProcessable {
     /**
-     * Use this method to feedForward input of neural network.
+     * Use this method to process input of neural network.
      */
-    NeuralProcessable feedForward();
+    NeuralProcessable process();
 
     NeuralProcessable setSignal(Double... signal);
 

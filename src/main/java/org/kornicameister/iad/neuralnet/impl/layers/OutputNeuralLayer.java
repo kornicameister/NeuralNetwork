@@ -28,17 +28,21 @@ public class OutputNeuralLayer extends NeuralLayer {
     }
 
     @Override
-    public NeuralBackPropagation setDelta(final Double... networkExpectedResult) {
+    public NeuralBackPropagation teach(final Double... networkExpectedResult) {
         for (int i = 0, size = this.getSize(); i < size; i++) {
-
+            // getting this layer neuron
             final Neuron neuron = this.neurons.get(i);
+
+            // setting help variables
             final Double neuronRawOutput = neuron.getRawOutput()[0];
             final Double neuronOutput = neuron.getOutput()[0];
             final Function function = neuron.getActivationFunction();
             final Double delta = (neuronOutput - networkExpectedResult[i]) * function.derivativeCalculate(neuronRawOutput);
 
-            neuron.setDelta(delta);
-//            this.error[i] = delta;
+            // teach neuron
+            neuron.teach(delta);
+
+            this.error[i] = delta;
         }
 
         if (LOGGER.isDebugEnabled()) {
@@ -52,10 +56,10 @@ public class OutputNeuralLayer extends NeuralLayer {
     }
 
     @Override
-    public NeuralProcessable feedForward() {
+    public NeuralProcessable process() {
         final List<Double> layerResult = new LinkedList<>();
         for (Neuron neuron : this.neurons) {
-            layerResult.add(neuron.feedForward().getOutput()[0]);
+            layerResult.add(neuron.process().getOutput()[0]);
         }
         this.output = layerResult.toArray(new Double[layerResult.size()]);
         if (LOGGER.isDebugEnabled()) {
