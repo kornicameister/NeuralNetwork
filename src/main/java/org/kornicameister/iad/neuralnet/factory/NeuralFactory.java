@@ -6,61 +6,77 @@ import org.kornicameister.iad.neuralnet.data.NeuronData;
 import org.kornicameister.iad.neuralnet.function.Function;
 import org.kornicameister.iad.neuralnet.impl.NeuralLayer;
 import org.kornicameister.iad.neuralnet.impl.Neuron;
+import org.kornicameister.iad.neuralnet.impl.layers.OutputNeuralLayer;
+import org.kornicameister.iad.neuralnet.util.ArraysUtils;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class NeuralFactory {
 
     public static class Layers {
-        public static NeuralLayer newOutputLayer(final NeuralLayer lowerLayer, final Neuron... neurons) {
-            final NeuralLayer layer = new NeuralLayer(neurons);
-            layer.setLowerLayer(lowerLayer);
-            return layer;
-        }
 
-        public static NeuralLayer newHiddenLayer(final NeuralLayer upperLayer, final NeuralLayer lowerLayer, final Neuron... neurons) {
-            return new NeuralLayer(upperLayer, lowerLayer, neurons);
-        }
-
-        public static NeuralLayer newInputLayer(final NeuralLayer higherLayer, final Neuron... neurons) {
-            final NeuralLayer layer = new NeuralLayer(neurons);
-            layer.setUpperLayer(higherLayer);
-            return layer;
+        public synchronized static NeuralLayer newLayer(final Double lower,
+                                                        final Double higher,
+                                                        final double biasWeight,
+                                                        final Integer neurons,
+                                                        final Integer neuronSize,
+                                                        final Function function,
+                                                        final Double momentumRate,
+                                                        final Double learningFactor,
+                                                        final Boolean output) {
+            final List<Neuron> hiddenNeurons = new LinkedList<>();
+            for (int it = 0; it < neurons; it++) {
+                hiddenNeurons.add(NeuralFactory.Neurons.newBiasNeuron(
+                        function,
+                        momentumRate,
+                        learningFactor,
+                        biasWeight,
+                        ArraysUtils.newRandomDoubleArray(neuronSize, lower, higher))
+                );
+            }
+            final Neuron[] neuronsAsArray = hiddenNeurons.toArray(new Neuron[hiddenNeurons.size()]);
+            if (!output) {
+                return new NeuralLayer(neuronsAsArray);
+            }
+            return new OutputNeuralLayer(neuronsAsArray);
         }
     }
 
     public static class Neurons {
 
-        public static Neuron newNeuron(final Function function,
-                                       final Double momentum,
-                                       final Double learningFactor,
-                                       final Double[] signals,
-                                       final Double[] weights) {
+        public synchronized static Neuron newNeuron(final Function function,
+                                                    final Double momentum,
+                                                    final Double learningFactor,
+                                                    final Double[] signals,
+                                                    final Double[] weights) {
             final NeuronConstants neuronConstants = new NeuronConstants(function, false, momentum, learningFactor);
             final NeuronData neuronData = new NeuronData(signals, weights);
             return newNeuron(neuronConstants, neuronData);
         }
 
-        public static Neuron newNeuron(final NeuronConstants neuronConstants, final NeuronData neuronData) {
+        public synchronized static Neuron newNeuron(final NeuronConstants neuronConstants, final NeuronData neuronData) {
             final Neuron neuron = new Neuron(neuronConstants, neuronData);
             neuronData.setNeuron(neuron);
             return neuron;
         }
 
-        public static Neuron newBiasNeuron(final Function function,
-                                           final Double momentum,
-                                           final Double learningFactor,
-                                           final Double biasWeight,
-                                           final Double[] signals,
-                                           final Double[] weights) {
+        public synchronized static Neuron newBiasNeuron(final Function function,
+                                                        final Double momentum,
+                                                        final Double learningFactor,
+                                                        final Double biasWeight,
+                                                        final Double[] signals,
+                                                        final Double[] weights) {
             final NeuronConstants neuronConstants = new NeuronConstants(function, true, momentum, learningFactor);
             final NeuronData neuronData = new NeuronBiasData(biasWeight, weights, signals);
             return newNeuron(neuronConstants, neuronData);
         }
 
-        public static Neuron newBiasNeuron(final Function function,
-                                           final Double momentum,
-                                           final Double learningFactor,
-                                           final Double biasWeight,
-                                           final Double[] weights) {
+        public synchronized static Neuron newBiasNeuron(final Function function,
+                                                        final Double momentum,
+                                                        final Double learningFactor,
+                                                        final Double biasWeight,
+                                                        final Double[] weights) {
             final NeuronConstants neuronConstants = new NeuronConstants(function, true, momentum, learningFactor);
             final NeuronData neuronData = new NeuronBiasData(biasWeight, weights);
             return newNeuron(neuronConstants, neuronData);

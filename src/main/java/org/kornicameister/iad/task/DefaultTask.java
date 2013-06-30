@@ -3,7 +3,9 @@ package org.kornicameister.iad.task;
 import javafx.util.Pair;
 import org.apache.log4j.Logger;
 import org.joor.Reflect;
+import org.kornicameister.iad.neuralnet.factory.NeuralFactory;
 import org.kornicameister.iad.neuralnet.function.Function;
+import org.kornicameister.iad.neuralnet.impl.NeuralLayer;
 import org.kornicameister.iad.neuralnet.impl.NeuralNetwork;
 
 import java.io.*;
@@ -19,7 +21,7 @@ import java.util.Properties;
 abstract public class DefaultTask implements Task {
     private static final Logger LOGGER = Logger.getLogger(DefaultTask.class);
     protected List<Double> errors = new LinkedList<>();
-    protected List<Pair<Double, Double>> result = new LinkedList<>();
+    protected List<Pair<Double, Double[]>> result = new LinkedList<>();
     protected NeuralNetwork network = null;
     protected Properties properties = null;
     protected Integer epochs;
@@ -74,10 +76,13 @@ abstract public class DefaultTask implements Task {
 
     private void saveDataResultToFile() throws FileNotFoundException {
         final PrintWriter dataWriter = new PrintWriter(new File(String.format("%s/%s", this.dataDir, this.outPath)));
-        for (Pair<Double, Double> result : this.result) {
+        for (Pair<Double, Double[]> result : this.result) {
             dataWriter.print(result.getKey());
             dataWriter.print(" ");
-            dataWriter.print(result.getValue());
+            for (Double res : result.getValue()) {
+                dataWriter.print(res);
+                dataWriter.print(" ");
+            }
             dataWriter.println();
         }
         dataWriter.flush();
@@ -152,5 +157,15 @@ abstract public class DefaultTask implements Task {
     private Pair<Double, Double> readRandomRange() {
         final String[] randomSplit = this.properties.getProperty("task.random").split(",");
         return new Pair<>(Double.valueOf(randomSplit[0]), Double.valueOf(randomSplit[1]));
+    }
+
+    protected NeuralLayer getLayer(final Double lower,
+                                   final Double higher,
+                                   final double biasWeight,
+                                   final Integer neurons,
+                                   final Integer neuronSize,
+                                   final Integer layer,
+                                   final Boolean output) {
+        return NeuralFactory.Layers.newLayer(lower, higher, biasWeight, neurons, neuronSize, this.functions[layer], this.momentumRate, this.learningFactor, output);
     }
 }

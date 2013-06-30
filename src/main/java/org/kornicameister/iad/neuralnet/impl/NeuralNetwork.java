@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class NeuralNetwork extends _NeuralNetwork {
     private static final Logger LOGGER = Logger.getLogger(NeuralNetwork.class);
-    private Double[] expectedOutput;
-    private Double[] output;
+    protected Double[] expectedOutput;
+    protected Double[] output;
 
     public NeuralNetwork(final Integer size, final NeuralLayer... layers) {
         super(layers);
@@ -33,10 +33,10 @@ public class NeuralNetwork extends _NeuralNetwork {
         return error / 2.0;
     }
 
-    public NeuralProcessable teach() {
+    public NeuralProcessable learn() {
         NeuralLayer layer = this.getOutputLayer();
         do {
-            layer.teach(this.expectedOutput);
+            layer.learn(this.expectedOutput);
             layer = layer.getLowerLayer();
         } while (layer != null);
         for (NeuralLayer neuralLayer : this.layerList) {

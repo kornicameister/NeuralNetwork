@@ -28,7 +28,7 @@ public class OutputNeuralLayer extends NeuralLayer {
     }
 
     @Override
-    public NeuralBackPropagation teach(final Double... networkExpectedResult) {
+    public NeuralBackPropagation learn(final Double... networkExpectedResult) {
         for (int i = 0, size = this.getSize(); i < size; i++) {
             // getting this layer neuron
             final Neuron neuron = this.neurons.get(i);
@@ -39,8 +39,8 @@ public class OutputNeuralLayer extends NeuralLayer {
             final Function function = neuron.getActivationFunction();
             final Double delta = (neuronOutput - networkExpectedResult[i]) * function.derivativeCalculate(neuronRawOutput);
 
-            // teach neuron
-            neuron.teach(delta);
+            // learn neuron
+            neuron.learn(delta);
 
             this.error[i] = delta;
         }

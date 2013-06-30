@@ -64,7 +64,7 @@ public class Neuron extends _Neuron {
     }
 
     @Override
-    public NeuralBackPropagation teach(final Double... delta) {
+    public NeuralBackPropagation learn(final Double... delta) {
         Preconditions.checkArgument(delta.length == 1, DELTA_FOR_THE_NEURON_TOO_BIG);
         this.delta = delta[0];
         if (LOGGER.isDebugEnabled()) {

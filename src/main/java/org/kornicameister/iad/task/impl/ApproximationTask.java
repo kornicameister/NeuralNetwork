@@ -2,19 +2,14 @@ package org.kornicameister.iad.task.impl;
 
 import javafx.util.Pair;
 import org.apache.log4j.Logger;
-import org.kornicameister.iad.neuralnet.factory.NeuralFactory;
 import org.kornicameister.iad.neuralnet.impl.NeuralLayer;
 import org.kornicameister.iad.neuralnet.impl.NeuralNetwork;
-import org.kornicameister.iad.neuralnet.impl.Neuron;
-import org.kornicameister.iad.neuralnet.impl.layers.OutputNeuralLayer;
-import org.kornicameister.iad.neuralnet.util.ArraysUtils;
 import org.kornicameister.iad.task.DefaultTask;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
@@ -35,14 +30,14 @@ public class ApproximationTask extends DefaultTask {
     @Override
     protected void doTask() {
         int training = 0;
-        while ((training++) < epochs) {
+        while (training < epochs) {
             final Long startTime = System.nanoTime();
             Double error = 0.0;
             for (final Double[] data : this.trainDataList) {
                 this.network.setSignal(data[0]);
                 this.network.setExpectedOutput(data[1]);
                 this.network.process();
-                this.network.teach();
+                this.network.learn();
             }
             for (Double[] data : this.testDataList) {
                 this.network.setSignal(data[0]);
@@ -52,13 +47,16 @@ public class ApproximationTask extends DefaultTask {
             }
             error = error / this.testDataList.size();
             this.errors.add(error);
-            final Long endTime = System.nanoTime() - startTime;
-            LOGGER.info(String.format("Epoch %d >>> computing finished, time=%dms, error=[%.3f%% / %.15f]", training - 1, TimeUnit.NANOSECONDS.toMillis(endTime), (error * 100.0), error));
+            if (training % 1000 == 0) {
+                final Long endTime = System.nanoTime() - startTime;
+                LOGGER.info(String.format("Epoch %d >>> computing finished, time=%dms, error=[%.3f%% / %.15f]", training, TimeUnit.NANOSECONDS.toMillis(endTime), (error * 100.0), error));
+            }
+            training += 1;
         }
         for (Double[] data : this.testDataList) {
-            network.setSignal(data[0]);
-            network.process();
-            result.add(new Pair<>(data[0], network.getOutput()[0]));
+            this.network.setSignal(data[0]);
+            this.network.process();
+            this.result.add(new Pair<>(data[0], this.network.getOutput().clone()));
         }
     }
 
@@ -68,9 +66,9 @@ public class ApproximationTask extends DefaultTask {
         final Double higher = this.range.getValue();
         final double biasWeight = 1.0;
 
-        final OutputNeuralLayer outputLayer = this.getOutputNeuralLayer(lower, higher, biasWeight);
-        final NeuralLayer hiddenLayer = this.getHiddenLayer(lower, higher, biasWeight);
-        final NeuralLayer inputLayer = this.getInputLayer(lower, higher, biasWeight);
+        final NeuralLayer outputLayer = this.getLayer(lower, higher, biasWeight, 1, this.neuronsInHidden, 2, true);
+        final NeuralLayer hiddenLayer = this.getLayer(lower, higher, biasWeight, this.neuronsInHidden, 1, 1, false);
+        final NeuralLayer inputLayer = this.getLayer(lower, higher, biasWeight, 1, 1, 0, false);
 
         inputLayer.setUpperLayer(hiddenLayer);
         hiddenLayer.setUpperLayer(outputLayer);
@@ -110,37 +108,5 @@ public class ApproximationTask extends DefaultTask {
         this.neuronsInHidden = this.neurons[this.neurons.length - 2];
         this.testDataPath = this.properties.getProperty("approx.test");
         this.trainPath = this.properties.getProperty("approx.train");
-    }
-
-    private OutputNeuralLayer getOutputNeuralLayer(final Double lower, final Double higher, final double biasWeight) {
-        return new OutputNeuralLayer(NeuralFactory.Neurons.newBiasNeuron(
-                this.functions[2],
-                this.momentumRate,
-                this.learningFactor,
-                biasWeight,
-                ArraysUtils.newRandomDoubleArray(this.neuronsInHidden, lower, higher)));
-    }
-
-    private NeuralLayer getHiddenLayer(final Double lower, final Double higher, final double biasWeight) {
-        final List<Neuron> hiddenNeurons = new LinkedList<>();
-        for (int it = 0; it < this.neuronsInHidden; it++) {
-            hiddenNeurons.add(NeuralFactory.Neurons.newBiasNeuron(
-                    this.functions[1],
-                    this.momentumRate,
-                    this.learningFactor,
-                    biasWeight,
-                    ArraysUtils.newRandomDoubleArray(1, lower, higher))
-            );
-        }
-        return new NeuralLayer(hiddenNeurons.toArray(new Neuron[hiddenNeurons.size()]));
-    }
-
-    private NeuralLayer getInputLayer(final Double lower, final Double higher, final double biasWeight) {
-        return new NeuralLayer(NeuralFactory.Neurons.newBiasNeuron(
-                this.functions[0],
-                this.momentumRate,
-                this.learningFactor,
-                biasWeight,
-                ArraysUtils.newRandomDoubleArray(1, lower, higher)));
     }
 }

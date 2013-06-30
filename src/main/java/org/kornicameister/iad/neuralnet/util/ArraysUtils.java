@@ -32,6 +32,12 @@ public class ArraysUtils {
         return array;
     }
 
+    public static Double[] newDoubleArray(final int size) {
+        Double[] array = new Double[size];
+        Arrays.fill(array, 0d);
+        return array;
+    }
+
     public static Double[] newRandomDoubleArray(final int size) {
         final Random seed = new Random(System.nanoTime());
         Double[] array = ArraysUtils.newDoubleArray(size);
@@ -41,10 +47,12 @@ public class ArraysUtils {
         return array;
     }
 
-    public static Double[] newDoubleArray(final int size) {
-        Double[] array = new Double[size];
-        Arrays.fill(array, 0d);
-        return array;
+    public static double[] toPrimitiveDouble(final Double[] array) {
+        final double[] result = new double[array.length];
+        for (int i = 0, outputLength = array.length; i < outputLength; i++) {
+            result[i] = array[i];
+        }
+        return result;
     }
 
 }

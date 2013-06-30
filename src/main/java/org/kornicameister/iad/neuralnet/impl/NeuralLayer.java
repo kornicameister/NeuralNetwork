@@ -54,7 +54,7 @@ public class NeuralLayer extends _NeuralLayer {
     }
 
     @Override
-    public NeuralBackPropagation teach(final Double... result) {
+    public NeuralBackPropagation learn(final Double... result) {
         this.error = new Double[this.getSize()];
         for (int i = 0, thisLayerNeuronsSize = this.neurons.size(); i < thisLayerNeuronsSize; i++) {
             final Neuron neuron = this.neurons.get(i);
@@ -73,7 +73,7 @@ public class NeuralLayer extends _NeuralLayer {
 
             err = err * function.derivativeCalculate(neuron.getRawOutput()[0]);
 
-            this.error[i] = ((Neuron) neuron.teach(err)).getDelta();
+            this.error[i] = ((Neuron) neuron.learn(err)).getDelta();
         }
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug(String.format("FB >>> \n\tresult=%s,\n\terror=%s",
