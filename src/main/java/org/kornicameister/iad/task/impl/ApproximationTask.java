@@ -21,11 +21,11 @@ import java.util.concurrent.TimeUnit;
  */
 public class ApproximationTask extends DefaultTask {
     private static final Logger LOGGER = Logger.getLogger(ApproximationTask.class);
-    private String testDataPath;
-    private String trainPath;
-    private List<Double[]> testDataList = new ArrayList<>();
-    private List<Double[]> trainDataList = new ArrayList<>();
-    private Integer neuronsInHidden;
+    protected String testDataPath;
+    protected String trainPath;
+    protected List<Double[]> testDataList = new ArrayList<>();
+    protected List<Double[]> trainDataList = new ArrayList<>();
+    protected Integer neuronsInHidden;
 
     @Override
     protected void doTask() {
@@ -47,7 +47,7 @@ public class ApproximationTask extends DefaultTask {
             }
             error = error / this.testDataList.size();
             this.errors.add(error);
-            if (training % 1000 == 0) {
+            if (training % 100 == 0) {
                 final Long endTime = System.nanoTime() - startTime;
                 LOGGER.info(String.format("Epoch %d >>> computing finished, time=%dms, error=[%.3f%% / %.15f]", training, TimeUnit.NANOSECONDS.toMillis(endTime), (error * 100.0), error));
             }
@@ -61,7 +61,7 @@ public class ApproximationTask extends DefaultTask {
     }
 
     @Override
-    public void buildNetwork() {
+    protected void buildNetwork() {
         final Double lower = this.range.getKey();
         final Double higher = this.range.getValue();
         final double biasWeight = 1.0;
@@ -77,7 +77,7 @@ public class ApproximationTask extends DefaultTask {
     }
 
     @Override
-    public void readData() throws FileNotFoundException {
+    protected void readData() throws FileNotFoundException {
         File dir = new File(this.dataDir);
         if (dir.isDirectory()) {
             File testSet = new File(String.format("%s/%s", this.dataDir, this.testDataPath));
