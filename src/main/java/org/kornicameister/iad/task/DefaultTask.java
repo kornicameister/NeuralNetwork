@@ -34,6 +34,9 @@ abstract public class DefaultTask implements Task {
     protected String dataDir;
     protected String outPath;
     protected String errPath;
+    protected Boolean bias;
+    protected Integer outputSize;
+    protected Integer inputSize;
 
     @Override
     public final void compute(final String propertiesPath) {
@@ -91,7 +94,34 @@ abstract public class DefaultTask implements Task {
 
     protected abstract void doTask();
 
-    protected abstract void buildNetwork();
+    protected void buildNetwork() {
+        final Double lower = this.range.getKey();
+        final Double higher = this.range.getValue();
+        final double biasWeight = 1.0;
+
+        final NeuralLayer outputLayer = this.getLayer(lower, higher, biasWeight, this.neurons[2], this.neurons[1], 2, true);
+        final NeuralLayer hiddenLayer = this.getLayer(lower, higher, biasWeight, this.neurons[1], this.neurons[0], 1, false);
+        final NeuralLayer inputLayer = this.getLayer(lower, higher, biasWeight, this.neurons[0], this.inputSize, 0, false);
+
+        inputLayer.setUpperLayer(hiddenLayer);
+        hiddenLayer.setUpperLayer(outputLayer);
+
+        this.network = new NeuralNetwork(this.outputSize, inputLayer, hiddenLayer, outputLayer);
+    }
+
+    protected NeuralLayer getLayer(final Double lower,
+                                   final Double higher,
+                                   final double biasWeight,
+                                   final Integer neurons,
+                                   final Integer neuronSize,
+                                   final Integer layer,
+                                   final Boolean output) {
+        if (this.bias) {
+            return NeuralFactory.Layers.newLayer(lower, higher, biasWeight, neurons, neuronSize, this.functions[layer], this.momentumRate, this.learningFactor, output);
+        } else {
+            return NeuralFactory.Layers.newLayer(lower, higher, neurons, neuronSize, this.functions[layer], this.momentumRate, this.learningFactor, output);
+        }
+    }
 
     protected abstract void readData() throws FileNotFoundException;
 
@@ -109,12 +139,15 @@ abstract public class DefaultTask implements Task {
         LOGGER.info(String.format("Task properties=%s", this.properties));
 
         this.epochs = Integer.valueOf(this.properties.getProperty("task.epochs"));
+        this.outputSize = Integer.valueOf(this.properties.getProperty("task.output"));
+        this.inputSize = Integer.valueOf(this.properties.getProperty("task.input"));
         this.layers = Integer.valueOf(this.properties.getProperty("task.layers"));
         this.momentumRate = Double.valueOf(this.properties.getProperty("task.momentum"));
         this.learningFactor = Double.valueOf(this.properties.getProperty("task.learningFactor"));
         this.dataDir = this.properties.getProperty("task.dataDir");
         this.outPath = this.properties.getProperty("task.out.data");
         this.errPath = this.properties.getProperty("task.out.err");
+        this.bias = Boolean.valueOf(this.properties.getProperty("task.bias", "false"));
         this.neurons = this.readNeuronsInLayers();
         this.functions = this.readFunctionsInLayers();
         this.range = this.readRandomRange();
@@ -157,15 +190,5 @@ abstract public class DefaultTask implements Task {
     private Pair<Double, Double> readRandomRange() {
         final String[] randomSplit = this.properties.getProperty("task.random").split(",");
         return new Pair<>(Double.valueOf(randomSplit[0]), Double.valueOf(randomSplit[1]));
-    }
-
-    protected NeuralLayer getLayer(final Double lower,
-                                   final Double higher,
-                                   final double biasWeight,
-                                   final Integer neurons,
-                                   final Integer neuronSize,
-                                   final Integer layer,
-                                   final Boolean output) {
-        return NeuralFactory.Layers.newLayer(lower, higher, biasWeight, neurons, neuronSize, this.functions[layer], this.momentumRate, this.learningFactor, output);
     }
 }

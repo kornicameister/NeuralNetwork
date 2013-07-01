@@ -28,8 +28,6 @@ public class ClassificationTask extends DefaultTask {
     private String testDataPath;
     private String trainPath;
     private String classificationErrorPath;
-    private Integer inputsCount;
-    private Integer outputsCount;
     private List<DataChunk> testDataList = new LinkedList<>();
     private List<DataChunk> trainDataList = new LinkedList<>();
     private Integer[] columns;
@@ -39,6 +37,19 @@ public class ClassificationTask extends DefaultTask {
     protected void saveResult() throws FileNotFoundException {
         super.saveResult();
         this.saveClassificationError();
+    }
+
+    private void saveClassificationError() throws FileNotFoundException {
+        final PrintWriter errWriter = new PrintWriter(new File(String.format("%s/%s", this.dataDir, this.classificationErrorPath)));
+        int it = 0;
+        for (Double err : this.classificationError) {
+            errWriter.print(it++);
+            errWriter.print(" ");
+            errWriter.print(err);
+            errWriter.println();
+        }
+        errWriter.flush();
+        errWriter.close();
     }
 
     @Override
@@ -84,20 +95,18 @@ public class ClassificationTask extends DefaultTask {
         }
     }
 
+    private JoinedError persistErrors(final Double error, final Double validClassificationsError) {
+        final double errorComputed = error / this.testDataList.size();
+        final double validClassificationErrorComputed = (validClassificationsError / this.testDataList.size()) * 100.0;
+        this.errors.add(errorComputed);
+        this.classificationError.add(validClassificationErrorComputed);
+        return new JoinedError(errorComputed, validClassificationErrorComputed);
+    }
+
     @Override
     protected void buildNetwork() {
-        final Double lower = this.range.getKey();
-        final Double higher = this.range.getValue();
-        final double biasWeight = 1.0;
-
-        final NeuralLayer outputLayer = this.getLayer(lower, higher, biasWeight, this.outputsCount, this.neurons[1], 2, true);
-        final NeuralLayer hiddenLayer = this.getLayer(lower, higher, biasWeight, this.neurons[1], 1, 1, false);
-        final NeuralLayer inputLayer = this.getLayer(lower, higher, biasWeight, 1, this.inputsCount, 0, false);
-
-        inputLayer.setUpperLayer(hiddenLayer);
-        hiddenLayer.setUpperLayer(outputLayer);
-
-        this.network = new ClassificationNeuralNetwork(this.outputsCount, inputLayer, hiddenLayer, outputLayer);
+        super.buildNetwork();
+        this.network = new ClassificationNeuralNetwork(this.outputSize, this.network.getLayers().toArray(new NeuralLayer[this.network.getSize()]));
     }
 
     @Override
@@ -113,14 +122,14 @@ public class ClassificationTask extends DefaultTask {
             Scanner scanner = new Scanner(testSet);
             while (scanner.hasNext()) {
                 line = scanner.nextLine().split(SPACE);
-                this.testDataList.add(new DataChunk(line, this.columns, this.outputsCount));
+                this.testDataList.add(new DataChunk(line, this.columns, this.outputSize));
             }
             scanner.close();
 
             scanner = new Scanner(dataSet1);
             while (scanner.hasNext()) {
                 line = scanner.nextLine().split(SPACE);
-                this.trainDataList.add(new DataChunk(line, this.columns, this.outputsCount));
+                this.trainDataList.add(new DataChunk(line, this.columns, this.outputSize));
             }
             scanner.close();
 
@@ -134,8 +143,6 @@ public class ClassificationTask extends DefaultTask {
         super.load(propertiesPath);
         this.testDataPath = this.properties.getProperty("classification.test");
         this.trainPath = this.properties.getProperty("classification.train");
-        this.inputsCount = Integer.valueOf(this.properties.getProperty("classification.inputs"));
-        this.outputsCount = Integer.valueOf(this.properties.getProperty("classification.outputs"));
         this.classificationErrorPath = this.properties.getProperty("classification.out.err");
         this.columns = this.readColumnsFromProperties();
     }
@@ -150,27 +157,6 @@ public class ClassificationTask extends DefaultTask {
         return columns;
     }
 
-    private JoinedError persistErrors(final Double error, final Double validClassificationsError) {
-        final double errorComputed = error / this.testDataList.size();
-        final double validClassificationErrorComputed = (validClassificationsError / this.testDataList.size()) * 100.0;
-        this.errors.add(errorComputed);
-        this.classificationError.add(validClassificationErrorComputed);
-        return new JoinedError(errorComputed, validClassificationErrorComputed);
-    }
-
-    private void saveClassificationError() throws FileNotFoundException {
-        final PrintWriter errWriter = new PrintWriter(new File(String.format("%s/%s", this.dataDir, this.classificationErrorPath)));
-        int it = 0;
-        for (Double err : this.classificationError) {
-            errWriter.print(it++);
-            errWriter.print(" ");
-            errWriter.print(err);
-            errWriter.println();
-        }
-        errWriter.flush();
-        errWriter.close();
-    }
-
     private class DataChunk {
         Integer key;
         Double[] signal;
@@ -182,10 +168,8 @@ public class ClassificationTask extends DefaultTask {
             this.output = this.parseOutput(outputs);
         }
 
-        private Double[] parseOutput(final Integer outputs) {
-            final Double[] output = ArraysUtils.newDoubleArray(outputs);
-            output[this.key - 1] = 1.0;
-            return output;
+        private Integer parseKey(final String[] line) {
+            return Integer.valueOf(line[line.length - 1]);
         }
 
         private Double[] parseSignal(final String[] line, final Integer[] columns) {
@@ -196,8 +180,10 @@ public class ClassificationTask extends DefaultTask {
             return data;
         }
 
-        private Integer parseKey(final String[] line) {
-            return Integer.valueOf(line[line.length - 1]);
+        private Double[] parseOutput(final Integer outputs) {
+            final Double[] output = ArraysUtils.newDoubleArray(outputs);
+            output[this.key - 1] = 1.0;
+            return output;
         }
 
         private Integer getKey() {

@@ -41,6 +41,30 @@ public class NeuralFactory {
             }
             return new OutputNeuralLayer(neuronsAsArray);
         }
+
+        public static NeuralLayer newLayer(final Double lower,
+                                           final Double higher,
+                                           final Integer neurons,
+                                           final Integer neuronSize,
+                                           final Function function,
+                                           final Double momentumRate,
+                                           final Double learningFactor,
+                                           final Boolean output) {
+            final List<Neuron> hiddenNeurons = new LinkedList<>();
+            for (int it = 0; it < neurons; it++) {
+                hiddenNeurons.add(NeuralFactory.Neurons.newNeuron(
+                        function,
+                        momentumRate,
+                        learningFactor,
+                        ArraysUtils.newRandomDoubleArray(neuronSize, lower, higher))
+                );
+            }
+            final Neuron[] neuronsAsArray = hiddenNeurons.toArray(new Neuron[hiddenNeurons.size()]);
+            if (!output) {
+                return new NeuralLayer(neuronsAsArray);
+            }
+            return new OutputNeuralLayer(neuronsAsArray);
+        }
     }
 
     public static class Neurons {
@@ -69,6 +93,15 @@ public class NeuralFactory {
                                                         final Double[] weights) {
             final NeuronConstants neuronConstants = new NeuronConstants(function, true, momentum, learningFactor);
             final NeuronData neuronData = new NeuronBiasData(biasWeight, weights, signals);
+            return newNeuron(neuronConstants, neuronData);
+        }
+
+        public synchronized static Neuron newNeuron(final Function function,
+                                                    final Double momentum,
+                                                    final Double learningFactor,
+                                                    final Double[] weights) {
+            final NeuronConstants neuronConstants = new NeuronConstants(function, false, momentum, learningFactor);
+            final NeuronData neuronData = new NeuronData(weights);
             return newNeuron(neuronConstants, neuronData);
         }
 

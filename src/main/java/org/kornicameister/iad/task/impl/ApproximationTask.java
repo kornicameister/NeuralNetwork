@@ -2,8 +2,6 @@ package org.kornicameister.iad.task.impl;
 
 import javafx.util.Pair;
 import org.apache.log4j.Logger;
-import org.kornicameister.iad.neuralnet.impl.NeuralLayer;
-import org.kornicameister.iad.neuralnet.impl.NeuralNetwork;
 import org.kornicameister.iad.task.DefaultTask;
 
 import java.io.File;
@@ -58,22 +56,6 @@ public class ApproximationTask extends DefaultTask {
             this.network.process();
             this.result.add(new Pair<>(data[0], this.network.getOutput().clone()));
         }
-    }
-
-    @Override
-    protected void buildNetwork() {
-        final Double lower = this.range.getKey();
-        final Double higher = this.range.getValue();
-        final double biasWeight = 1.0;
-
-        final NeuralLayer outputLayer = this.getLayer(lower, higher, biasWeight, 1, this.neuronsInHidden, 2, true);
-        final NeuralLayer hiddenLayer = this.getLayer(lower, higher, biasWeight, this.neuronsInHidden, 1, 1, false);
-        final NeuralLayer inputLayer = this.getLayer(lower, higher, biasWeight, 1, 1, 0, false);
-
-        inputLayer.setUpperLayer(hiddenLayer);
-        hiddenLayer.setUpperLayer(outputLayer);
-
-        this.network = new NeuralNetwork(1, inputLayer, hiddenLayer, outputLayer);
     }
 
     @Override

@@ -2,8 +2,6 @@ package org.kornicameister.iad.task.impl;
 
 import javafx.util.Pair;
 import org.apache.log4j.Logger;
-import org.kornicameister.iad.neuralnet.impl.NeuralLayer;
-import org.kornicameister.iad.neuralnet.impl.NeuralNetwork;
 import org.kornicameister.iad.task.DefaultTask;
 
 import java.io.File;
@@ -55,22 +53,6 @@ public class TransformationTask extends DefaultTask {
             final Double tmp = clone.remove(0);
             this.result.add(new Pair<>(tmp, clone.toArray(new Double[clone.size()])));
         }
-    }
-
-    @Override
-    protected void buildNetwork() {
-        final Double lower = this.range.getKey();
-        final Double higher = this.range.getValue();
-        final double biasWeight = 1.0;
-
-        final NeuralLayer outputLayer = this.getLayer(lower, higher, biasWeight, this.neurons[2], this.neurons[1], 2, true);
-        final NeuralLayer hiddenLayer = this.getLayer(lower, higher, biasWeight, this.neurons[1], this.neurons[0], 1, false);
-        final NeuralLayer inputLayer = this.getLayer(lower, higher, biasWeight, this.neurons[0], 4, 0, false);
-
-        inputLayer.setUpperLayer(hiddenLayer);
-        hiddenLayer.setUpperLayer(outputLayer);
-
-        this.network = new NeuralNetwork(4, inputLayer, hiddenLayer, outputLayer);
     }
 
     @Override
